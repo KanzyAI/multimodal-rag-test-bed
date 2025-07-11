@@ -5,9 +5,9 @@ Automated testbed for evaluating retrieval pipeline accuracy and performance acr
 ## Overview
 
 This system evaluates:
-- **Embedders**: Late Interaction, Dense and sparse embedding models for text and multimodal content
-- **Vector Databases**: Different vector storage and retrieval backends  
-- **Modalities**: Text-based, visual, and hybrid retrieval approaches
+- **Embedders**: Late Interaction and Dense embedding models for text and multimodal content and and sparse pipelines for benchmarking
+- **Vector Databases**: Vector database factory to support plug-and-play evalaution of different vector store providers
+- **Modalities**: Text-based, multimodal based approaches
 
 ## Architecture
 
@@ -20,10 +20,10 @@ main/
 ├── pipelines/          # Retrieval pipeline implementations
 │   ├── base/           # Base indexing and retrieval classes
 │   ├── text/           # Text-based retrieval (single/multi vector)
-│   ├── visual/         # Visual retrieval (ColPali-based)
+│   ├── visual/         # Visual retrieval (single/multi vector)
 │   └── baselines/      # Sparse retrieval baselines (BM25, SPLADE)
 ├── vector_databases/   # Vector database abstraction layer
-└── generation/         # LLM integration modules (currently disabled)
+└── generation/         # LLM integration modules (currently not used)
 
 evaluation/             # Evaluation framework and statistical testing
 utils/                  # Latency extraction and performance analysis tools
