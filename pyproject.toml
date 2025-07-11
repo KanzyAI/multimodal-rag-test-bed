@@ -1,0 +1,78 @@
+[tool.poetry]
+name = "ekuru_vrag"
+
+version = "0.1.0"
+description = "A RAG system utilizing the compari architecture for document analysis."
+authors = ["Emre Kuru <emre.kuru@ozu.edu.tr>"]
+license = "Apache 2.0"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+
+# Core Retrieval Libraries
+python = ">=3.10.0,<3.13"
+pandas = "^2.2.3"
+torch = "^2.5.1"
+datasets = "~3.0.0"
+transformers = ">=4.50.0,<4.51.0"
+accelerate = "^1.4.0"
+colpali-engine = "^0.3.9"
+stamina = "^24.3.0"
+
+# Evaluation
+evaluate = "^0.4.3"
+bert-score = "^0.3.13"
+rouge-score = "^0.1.2"
+pytrec_eval = "~0.5"
+deepeval = "^1.5.9"
+matplotlib = "^3.9.2"
+seaborn = "^0.13.2"
+statsmodels = "^0.14.4"
+
+# Generation Libraries
+langchain = "^0.3.4"
+langchain-experimental = "^0.3.3"
+langchain-anthropic = "^0.3.1"
+langchain-google-genai = "^2.0.7"
+langchain-openai = "^0.2.14"
+openai = "^1.54.0"
+google-genai = "^0.3.0"
+
+# Vector Stores and Databases
+qdrant-client = "^1.13.2"
+
+# OCR Document Processing
+pdf2image = "^1.17.0"
+openpyxl = "^3.1.5"
+pytesseract = "^0.3.13"
+pdfkit = "^1.0.0"
+
+# Utilities and Tools
+ipywidgets = "^8.1.5"
+sentence-transformers = "^4.1.0"
+rank-bm25 = "^0.2.2"
+nltk = "^3.9.1"
+pi-heif = "^0.22.0"
+dotenv = "^0.9.9"
+yasem = "^0.4.1"
+unstructured = "^0.17.2"
+pdfminer = "^20191125"
+unstructured-pytesseract = "^0.3.15"
+voyageai = "^0.3.3"
+langsmith = "^0.4.5"
+
+[tool.poetry.group.dev.dependencies]
+poetry = "^1.7.0"
+pytest = "^8.1.0"
+coverage = "^7.4.0"
+
+[[tool.poetry.source]]
+name = "pypi"
+priority = "primary"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.mypy]
+ignore_missing_imports = true
