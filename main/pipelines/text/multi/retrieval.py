@@ -17,7 +17,7 @@ if __name__ == "__main__":
     )
 
     database_mapping = {
-        "text": VectorDatabaseFactory.create_database(os.getenv("DATABASE_TYPE"), text_config)
+        "text": VectorDatabaseFactory.create_database(os.getenv("DATABASE_NAME"), text_config)
     }
 
     retrieval_instance = TextRetrieval(

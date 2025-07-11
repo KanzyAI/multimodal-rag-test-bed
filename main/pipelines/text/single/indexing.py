@@ -9,7 +9,7 @@ if __name__ == "__main__":
     text_embedder = SingleTextEmbedder()
 
     text_config = DatabaseConfig(
-        url=os.getenv("TEXT_SINGLE_QDRANT_URL"),
+        url=os.getenv("API_KEY"),
         api_key=os.getenv("TEXT_SINGLE_QDRANT_API_KEY"),
         collection_name=f"text-single-{os.getenv('TASK')}",
         vector_size=4096,
@@ -17,7 +17,7 @@ if __name__ == "__main__":
     )
 
     database_mapping = {
-        "text": VectorDatabaseFactory.create_database(os.getenv("DATABASE_TYPE"), text_config)
+        "text": VectorDatabaseFactory.create_database(os.getenv("DATABASE_NAME"), text_config)
     }
 
     indexing_instance = TextIndexing(

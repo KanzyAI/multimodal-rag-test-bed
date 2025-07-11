@@ -14,7 +14,7 @@ if __name__ == "__main__":
     )
 
     database_mapping = {
-        "visual": VectorDatabaseFactory.create_database(os.getenv("DATABASE_TYPE"), visual_config)
+        "visual": VectorDatabaseFactory.create_database(os.getenv("DATABASE_NAME"), visual_config)
     }
 
     indexing_instance = ColpaliIndexing(

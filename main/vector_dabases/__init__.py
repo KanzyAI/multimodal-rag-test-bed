@@ -13,9 +13,12 @@ from .base_database import (
     SearchResults,
     VectorDatabaseFactory
 )
+from .pinecone_manager import PineconeManager
+from .qdrant_manager import QdrantManager
 
-# Import implementations to register them with the factory
-from . import qdrant_manager
+VectorDatabaseFactory.register_database("pinecone", PineconeManager)
+VectorDatabaseFactory.register_database("qdrant", QdrantManager)
+
 
 __all__ = [
     'BaseVectorDatabase',

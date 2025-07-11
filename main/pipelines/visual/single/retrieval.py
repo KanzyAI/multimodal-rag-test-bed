@@ -6,7 +6,7 @@ from vector_dabases import DatabaseConfig, VectorDatabaseFactory
 if __name__ == "__main__":
 
     visual_config = DatabaseConfig(
-        url=os.getenv("VISUAL_SINGLE_QDRANT_URL"),
+        url=os.getenv("API_KEY"),
         api_key=os.getenv("VISUAL_SINGLE_QDRANT_API_KEY"),
         collection_name=f"visual-{os.getenv('TASK').lower()}",
         vector_size=1024,
@@ -14,7 +14,7 @@ if __name__ == "__main__":
     )
 
     database_mapping = {
-        "visual": VectorDatabaseFactory.create_database(os.getenv("DATABASE_TYPE"), visual_config)
+        "visual": VectorDatabaseFactory.create_database(os.getenv("DATABASE_NAME"), visual_config)
     }
 
     retrieval_instance = ColpaliRetrieval(

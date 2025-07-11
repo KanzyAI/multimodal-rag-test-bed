@@ -6,15 +6,15 @@ from main.vector_dabases import DatabaseConfig, VectorDatabaseFactory
 if __name__ == "__main__":
 
     visual_config = DatabaseConfig(
-        url=os.getenv("VISUAL_SINGLE_QDRANT_URL"),
-        api_key=os.getenv("VISUAL_SINGLE_QDRANT_API_KEY"),
-        collection_name=f"visual-single-{os.getenv('TASK').lower()}",
+        url=os.getenv("DATABASE_URL"),
+        api_key=os.getenv("DATABASE_API_KEY"),
+        collection_name=f"multimodal-dense-{os.getenv('TASK').lower()}",
         vector_size=1024,
         vector_type="single",
     )
 
     database_mapping = {
-        "visual-single": VectorDatabaseFactory.create_database(os.getenv("DATABASE_TYPE"), visual_config)
+        "visual-single": VectorDatabaseFactory.create_database(os.getenv("DATABASE_NAME"), visual_config)
     }
 
     indexing_instance = ColpaliIndexing(
