@@ -8,12 +8,11 @@ import fcntl
 from io import BufferedReader  
 from unstructured.chunking.title import chunk_by_title
 from unstructured.partition.api import partition_via_api
-from generation.Google import generate_context_for_chunk
+from main.generation.Google import generate_context_for_chunk
 # from unstructured.partition.image import partition_image
 
 class Preprocessor:
-    def __init__(self, task, output_path, advanced_ocr = False, captioning = False):
-        self.task = task
+    def __init__(self, output_path, advanced_ocr = False, captioning = False):
         self.api_key = os.getenv("UNSTRUCTURED_API_KEY")
         self.output_path = output_path
         self.captioning = captioning

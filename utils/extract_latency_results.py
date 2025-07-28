@@ -1,8 +1,7 @@
 import time
+import pandas as pd
 from langsmith import Client
 from typing import Dict, List, Any, Optional
-import pandas as pd
-from datetime import datetime
 
 class LatencyExtractor:
     def __init__(self):
@@ -97,6 +96,7 @@ class LatencyExtractor:
         
         try:    
             root_run = self.client.read_run(root_run_id)
+            self.root_run = root_run
             print(f"Processing root run: {root_run.name} ({root_run.id})")
             
             results = self.collect_all_leaf_nodes(root_run)
@@ -136,80 +136,73 @@ class LatencyExtractor:
             print("No filtered nodes available for Excel creation")
             return
         
-        # Get unique filenames and run names
+        # Get unique filenames and run name + route combinations
         filenames = set()
-        run_names = set()
+        column_names = set()
         
         for node in filtered_nodes:
             filenames.add(node['filename'])
-            run_names.add(node['run_name'])
+            run_name = node['run_name']
+            route = node['metadata']['route']
+            column_name = f"{run_name} - {route}"
+            column_names.add(column_name)
         
         filenames = sorted(list(filenames))
-        run_names = sorted(list(run_names))
+        column_names = sorted(list(column_names))
         
-        print(f"Creating Excel matrix: {len(filenames)} files × {len(run_names)} run types")
+        print(f"Creating Excel matrix: {len(filenames)} files × {len(column_names)} run types")
         
         # Create matrix data structure
-        matrix_data = {}
         latency_data = {}
-        count_data = {}
         
         # Initialize matrices
         for filename in filenames:
-            matrix_data[filename] = {}
             latency_data[filename] = {}
-            count_data[filename] = {}
-            for run_name in run_names:
-                matrix_data[filename][run_name] = []
-                latency_data[filename][run_name] = None
-                count_data[filename][run_name] = 0
+            for column_name in column_names:
+                latency_data[filename][column_name] = None
         
         # Fill matrix with data
         for node in filtered_nodes:
             filename = node['filename']
             run_name = node['run_name']
+            route = node['metadata']['route']
             latency = node.get('latency_ms')
             
+            column_name = f"{run_name} - {route}"
+            
             if latency is not None:
-                matrix_data[filename][run_name].append(latency)
+                latency_data[filename][column_name] = latency
         
-        # Calculate average latencies and counts
-        for filename in filenames:
-            for run_name in run_names:
-                latencies = matrix_data[filename][run_name]
-                if latencies:
-                    latency_data[filename][run_name] = round(sum(latencies) / len(latencies), 2)
-                    count_data[filename][run_name] = len(latencies)
-        
-        # Create DataFrames
+        # Create DataFrame
         latency_df = pd.DataFrame(latency_data).T
         latency_df.index.name = 'Filename'
         
-        count_df = pd.DataFrame(count_data).T
-        count_df.index.name = 'Filename'
+
+        tags = self.root_run.tags
         
-        # Generate output filename
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        output_file = f"latency_matrix_{root_run_id}_{timestamp}.xlsx"
+        output_file = ""
+
+        for i, tag in enumerate(tags):
+            output_file += f"{tag}"
+            if i < len(tags) - 1:
+                output_file += "_"
+
+        output_file += ".xlsx"
         
-        # Save to Excel with multiple sheets
         try:
             with pd.ExcelWriter(output_file, engine='openpyxl') as writer:
-                # Average latency sheet
-                latency_df.to_excel(writer, sheet_name='Average_Latency_ms')
-                
-                # Count sheet
-                count_df.to_excel(writer, sheet_name='Run_Counts')
+                # Latency sheet
+                latency_df.to_excel(writer, sheet_name='Latency_ms')
                 
                 # Raw data sheet for reference
                 raw_df = pd.DataFrame(filtered_nodes)
                 raw_df.to_excel(writer, sheet_name='Raw_Data', index=False)
             
             print(f"Excel file created: {output_file}")
-            print(f"Sheets: Average_Latency_ms, Run_Counts, Raw_Data")
+            print(f"Sheets: Latency_ms, Raw_Data")
             
             # Print summary
-            total_data_points = sum(count_data[f][r] for f in filenames for r in run_names if count_data[f][r] > 0)
+            total_data_points = sum(1 for f in filenames for c in column_names if latency_data[f][c] is not None)
             print(f"Total data points: {total_data_points}")
             
             return output_file
@@ -235,4 +228,4 @@ def main(root_run_id: str = None):
         print("No nodes with filename found - skipping Excel creation")
         
 if __name__ == "__main__":
-    main(root_run_id="f719e5cb-03ac-4cde-a00c-cafa4632cb19") 
+    main(root_run_id="f4a38be9-e309-4199-a21f-a5b6cb76605a") 

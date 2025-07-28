@@ -1,0 +1,102 @@
+{
+    "What are the key features of IBM Storage Safeguarded snapshots for recovery and restore?": {
+        "selected_route": "MULTIMODAL-SINGLE",
+        "results": {
+            "Data Resiliency Designs A Deep Dive into IBM Storage Safeguarded snapshots_page_47.png": 0.483564436,
+            "IBM Storage FlashSystem 9500 Product Guide for IBM Storage Virtualize 8.6_page_19.png": 0.233099982,
+            "Automating IBM storage FlashSystem_page_27.png": 0.195454836,
+            "IBM FlashSystem 840 Product Guide_page_13.png": 0.193984926,
+            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_54.png": 0.185066372
+        }
+    },
+    "What is the significance of the single point of management in IBM Flash Grid?": {
+        "selected_route": "MULTIMODAL-SINGLE",
+        "results": {
+            "IBM FlashSystem 9100 Architecture, Performance, and Implementation_page_101.png": 0.345785826,
+            "IBM FlashSystem 840 Product Guide_page_13.png": 0.275864929,
+            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_269.png": 0.270567179,
+            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_54.png": 0.260165274,
+            "FlashSystem 900 Product Guide_page_19.png": 0.258262277
+        }
+    },
+    "What types of data transfer are excluded from the iplink_mb metric in the IBM FlashSystem 9100?": {
+        "selected_route": "MULTIMODAL-SINGLE",
+        "results": {
+            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_207.png": 0.330422491,
+            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_54.png": 0.323054045,
+            "FlashSystem 900 Product Guide_page_19.png": 0.315813214,
+            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_269.png": 0.269619524,
+            "IBM FlashSystem 9100 Architecture, Performance, and Implementation_page_101.png": 0.248446465
+        }
+    },
+    "What protocols are supported for the notifications sent to IBM?": {
+        "selected_route": "MULTIMODAL-SINGLE",
+        "results": {
+            "IBM FlashSystem 9100 Architecture, Performance, and Implementation_page_101.png": 0.181289673,
+            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_269.png": 0.181195214,
+            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_54.png": 0.180349723,
+            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_207.png": 0.16153428,
+            "Data Resiliency Designs A Deep Dive into IBM Storage Safeguarded snapshots_page_47.png": 0.158299789
+        }
+    },
+    "What is the purpose of breaking data into fixed-size chunks in IBM FlashSystem 9100?": {
+        "selected_route": "MULTIMODAL-SINGLE",
+        "results": {
+            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_269.png": 0.332263499,
+            "IBM FlashSystem 840 Product Guide_page_13.png": 0.262014151,
+            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_207.png": 0.260424256,
+            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_123.png": 0.247645304,
+            "IBM FlashSystem 9100 Architecture, Performance, and Implementation_page_101.png": 0.231521115
+        }
+    },
+    "How do you rename an external storage controller in the IBM FlashSystem 9100?": {
+        "selected_route": "MULTIMODAL-SINGLE",
+        "results": {
+            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_269.png": 0.315108478,
+            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_123.png": 0.291421026,
+            "IBM FlashSystem 9100 Architecture, Performance, and Implementation_page_101.png": 0.256594807,
+            "IBM Storage FlashSystem 9500 Product Guide for IBM Storage Virtualize 8.6_page_19.png": 0.238292173,
+            "FlashSystem 900 Product Guide_page_19.png": 0.210820809
+        }
+    },
+    "What is the completion time for the cryptographic erase method in IBM FlashSystem 9500?": {
+        "selected_route": "MULTIMODAL-SINGLE",
+        "results": {
+            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_123.png": 0.201297253,
+            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_54.png": 0.189786837,
+            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_207.png": 0.178137124,
+            "FlashSystem 900 Product Guide_page_19.png": 0.171547547,
+            "IBM Storage FlashSystem 9500 Product Guide for IBM Storage Virtualize 8.6_page_19.png": 0.169168547
+        }
+    },
+    "What advanced functions does the IBM FlashSystem FS9100 offer for data reduction?": {
+        "selected_route": "MULTIMODAL-SINGLE",
+        "results": {
+            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_269.png": 0.288380653,
+            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_54.png": 0.26632607,
+            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_123.png": 0.264496118,
+            "FlashSystem 900 Product Guide_page_19.png": 0.262435496,
+            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_207.png": 0.245425269
+        }
+    },
+    "How often are cloud snapshots created under the predefinedsspolicypolicy38 policy for IBM Storage Safeguarded snapshots?": {
+        "selected_route": "MULTIMODAL-SINGLE",
+        "results": {
+            "Data Resiliency Designs A Deep Dive into IBM Storage Safeguarded snapshots_page_47.png": 0.313897371,
+            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_207.png": 0.171742156,
+            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_269.png": 0.170218855,
+            "IBM FlashSystem 840 Product Guide_page_13.png": 0.114512302,
+            "IBM Storage FlashSystem 9500 Product Guide for IBM Storage Virtualize 8.6_page_19.png": 0.114103243
+        }
+    },
+    "What does the 'open' domain policy setting allow the global administrator to do in IBM FlashSystem A9000 and A9000R?": {
+        "selected_route": "MULTIMODAL-SINGLE",
+        "results": {
+            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_269.png": 0.322949052,
+            "IBM FlashSystem 9100 Architecture, Performance, and Implementation_page_101.png": 0.257918924,
+            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_207.png": 0.242316633,
+            "FlashSystem 900 Product Guide_page_19.png": 0.237002894,
+            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_54.png": 0.201501623
+        }
+    }
+}

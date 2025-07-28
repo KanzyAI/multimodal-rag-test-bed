@@ -5,7 +5,7 @@ import time
 import json
 from abc import ABC, abstractmethod
 from datasets import load_dataset
-from pipelines.text.preprocessor import Preprocessor
+from main.pipelines.preprocessor import Preprocessor
 from pipelines.base.base_retrieval import BaseRetrieval
 
 class BaseSparseRetrieval(BaseRetrieval):

@@ -1,5 +1,5 @@
 from . import OpenRouter, Openai, Claude, Google
-from generation.prompts import *
+from main.generation.prompts import *
 
 async def image_based(query, pages, model_type, prompt_template=IMAGE_PROMPT):
     provider = model_type.split("-")[0]
