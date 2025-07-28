@@ -6,7 +6,6 @@ from datasets import load_dataset
 from typing import Dict, Any, TypedDict
 from langgraph.graph import StateGraph, START, END
 from tqdm.asyncio import tqdm
-from main.vector_dabases import BaseVectorDatabase
 from langsmith import traceable
 from main.pipelines import database_mapping, embedder_mapping, TASK
 
@@ -14,6 +13,8 @@ class SingleQueryState(TypedDict):
     """State for single query processing workflow"""
     query: str
     route: str
+    embedder: Any
+    database: Any
     query_embedding: Any
     retrieved_results: Any
     results_dict: Dict[str, float]
@@ -25,11 +26,11 @@ class SingleRetrievalTask:
     
     def __init__(
         self,
-        router,
-        database_mapping: Dict[str, BaseVectorDatabase],
-        embedder_map: Dict[str, Any],
-        semaphore: asyncio.Semaphore = None,
-        progress_bar: tqdm = None
+        router = None,
+        database_mapping = None,
+        embedder_map = None,
+        semaphore = None,
+        progress_bar = None
     ):
         self.router = router
         self.database_mapping = database_mapping
@@ -41,9 +42,10 @@ class SingleRetrievalTask:
         """Create a LangGraph for processing a single query retrieval"""
         
         def start_processing(state: SingleQueryState) -> SingleQueryState:
-            """Initialize query processing"""
-            state["route"] = self.route
             state["query_embedding"] = None
+            state["route"] = None
+            state["embedder"] = None
+            state["database"] = None    
             state["retrieved_results"] = None
             state["results_dict"] = {}
             state["processed"] = False
@@ -64,13 +66,13 @@ class SingleRetrievalTask:
 
         async def embed_query(state: SingleQueryState) -> SingleQueryState:
             """Embed the query using the embedder"""
-            query_embedding = await self.embedder.embed_query(state["query"])
+            query_embedding = await state["embedder"].embed_query(state["query"])
             state["query_embedding"] = query_embedding
             return state
 
         async def search_database(state: SingleQueryState) -> SingleQueryState:
             """Search the database with the query embedding"""
-            retrieved = await self.database.search(state["query_embedding"])
+            retrieved = await state["database"].search(state["query_embedding"])
             state["retrieved_results"] = retrieved
             return state
 
@@ -106,7 +108,6 @@ class SingleRetrievalTask:
         workflow.add_edge(START, "start_processing")
         workflow.add_edge("start_processing", "classify_query")
         workflow.add_edge("classify_query", "embed_query")
-        workflow.add_edge("start_processing", "embed_query")
         workflow.add_edge("embed_query", "search_database")
         workflow.add_edge("search_database", "process_results")
         workflow.add_edge("process_results", "finish_processing")

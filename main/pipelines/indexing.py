@@ -56,7 +56,7 @@ class SingleIndexingTask:
 
         async def preprocess_document(state: SingleDocumentState) -> SingleDocumentState:
             """Preprocess document for text routes"""
-            processed_doc = await self.preprocessor(state["image"], self.route)
+            processed_doc = await self.preprocessor(state["image"])
             state["image"] = processed_doc
             return state
 
@@ -88,7 +88,7 @@ class SingleIndexingTask:
             """Complete document processing"""
             if self.progress_bar:
                 self.progress_bar.update(1)
-                self.progress_bar.set_postfix({"file": state["filename"], "route": self.route})
+                self.progress_bar.set_postfix({"file": state["filename"]})
             return state
 
         # Create the graph
@@ -145,79 +145,64 @@ class BaseIndexing:
         self.preprocessor = Preprocessor(f"main/{TASK}_chunks.json")
         self.database_mapping = database_mapping
 
-    async def process_all_files(self, indexed_files_per_route: Dict[str, set]):
-        """Process all not indexed files from the dataset using parallel SingleIndexingTask instances"""
+    async def process_all_files(self, indexed_files: set):
+        """Process all not indexed files from the dataset using a single route"""
         
         dataset = load_dataset(os.getenv("DATASET"), token=os.getenv("HF_TOKEN"), split="test")
 
         all_keys = set(dataset["image_filename"])
         
-        total_docs = 0
-        route_file_counts = {}
+        # Get single route
+        router = list(self.database_mapping.keys())[0]
+        database = self.database_mapping[router]
         
-        for route, database in self.database_mapping.items():
-            indexed_files = indexed_files_per_route.get(route, set())
-            keys_to_process = all_keys - indexed_files
-            
-            if len(keys_to_process) > 10:
-                keys_to_process = random.sample(list(keys_to_process), 10)
-            else:
-                keys_to_process = list(keys_to_process)
-                
-            route_file_counts[route] = len(keys_to_process)
-            total_docs += len(keys_to_process)
+        keys_to_process = all_keys - indexed_files
+        
+        if len(keys_to_process) > 10:
+            keys_to_process = random.sample(list(keys_to_process), 10)
+        else:
+            keys_to_process = list(keys_to_process)
+        
+        total_docs = len(keys_to_process)
         
         if total_docs == 0:
             return
             
         with tqdm(total=total_docs, desc="Processing documents", unit="docs") as pbar:
-            route_tasks = []
+            tasks = []
             
-            for route, database in self.database_mapping.items():
-                indexed_files = indexed_files_per_route.get(route, set())
-                keys_to_process = all_keys - indexed_files
+            if keys_to_process:
+                embedder = self.embedder_map[router]
+                indexing_task = SingleIndexingTask(
+                    route=router,
+                    database=database,
+                    embedder=embedder,
+                    preprocessor=self.preprocessor,
+                    semaphore=self.semaphore,
+                    progress_bar=pbar
+                )
                 
-                if len(keys_to_process) > 10:
-                    keys_to_process = random.sample(list(keys_to_process), 10)
-                else:
-                    keys_to_process = list(keys_to_process)
-
-                if keys_to_process:
-                    embedder = self.embedder_map[route]
-                    indexing_task = SingleIndexingTask(
-                        route=route,
-                        database=database,
-                        embedder=embedder,
-                        preprocessor=self.preprocessor,
-                        semaphore=self.semaphore,
-                        progress_bar=pbar
-                    )
-                    
-                    for row in dataset:
-                        if row["image_filename"] in keys_to_process:
-                            keys_to_process.remove(row["image_filename"])
-                            task = indexing_task.process_document(row["image_filename"], row["image"])
-                            route_tasks.append(task)
+                for row in dataset:
+                    if row["image_filename"] in keys_to_process:
+                        keys_to_process.remove(row["image_filename"])
+                        task = indexing_task.process_document(row["image_filename"], row["image"])
+                        tasks.append(task)
             
-            if route_tasks:
-                await asyncio.gather(*route_tasks)
+            if tasks:
+                await asyncio.gather(*tasks)
 
     @traceable(name=f"indexing", tags=["indexing", TASK, os.getenv("PIPELINE_NAME")])
     async def __call__(self):
         """Main method that orchestrates the entire indexing process"""
         
-        indexed_files_per_route = {}
-
-        init_tasks = []
-        for route, database in self.database_mapping.items():
-            init_tasks.append(database.initialize_collection())
+        # Get single route
+        router = list(self.database_mapping.keys())[0]
         
-        await asyncio.gather(*init_tasks)
+        database = self.database_mapping[router]
+        await database.initialize_collection()
         
-        for route, database in self.database_mapping.items():
-            indexed_files_per_route[route] = await database.get_indexed_files()
-            
-        await self.process_all_files(indexed_files_per_route)
+        indexed_files = await database.get_indexed_files()    
+        await self.process_all_files(indexed_files)
 
 if __name__ == "__main__":
     indexing = BaseIndexing()
