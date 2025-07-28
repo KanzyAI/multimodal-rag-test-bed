@@ -153,8 +153,8 @@ class BaseIndexing:
         all_keys = set(dataset["image_filename"])
         
         # Get single route
-        router = list(self.database_mapping.keys())[0]
-        database = self.database_mapping[router]
+        route = list(self.database_mapping.keys())[0]
+        database = self.database_mapping[route]
         
         keys_to_process = all_keys - indexed_files
         
@@ -172,9 +172,9 @@ class BaseIndexing:
             tasks = []
             
             if keys_to_process:
-                embedder = self.embedder_map[router]
+                embedder = self.embedder_map[route]
                 indexing_task = SingleIndexingTask(
-                    route=router,
+                    route=route,
                     database=database,
                     embedder=embedder,
                     preprocessor=self.preprocessor,
@@ -196,9 +196,9 @@ class BaseIndexing:
         """Main method that orchestrates the entire indexing process"""
         
         # Get single route
-        router = list(self.database_mapping.keys())[0]
+        route = list(self.database_mapping.keys())[0]
         
-        database = self.database_mapping[router]
+        database = self.database_mapping[route]
         await database.initialize_collection()
         
         indexed_files = await database.get_indexed_files()    
