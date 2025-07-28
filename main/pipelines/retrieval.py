@@ -25,15 +25,15 @@ class SingleRetrievalTask:
     
     def __init__(
         self,
-        route: str,
-        database: BaseVectorDatabase,
-        embedder: Any,
+        router,
+        database_mapping: Dict[str, BaseVectorDatabase],
+        embedder_map: Dict[str, Any],
         semaphore: asyncio.Semaphore = None,
         progress_bar: tqdm = None
     ):
-        self.route = route
-        self.database = database
-        self.embedder = embedder
+        self.router = router
+        self.database_mapping = database_mapping
+        self.embedder_map = embedder_map
         self.semaphore = semaphore
         self.progress_bar = progress_bar
 
@@ -47,6 +47,19 @@ class SingleRetrievalTask:
             state["retrieved_results"] = None
             state["results_dict"] = {}
             state["processed"] = False
+            return state
+
+        async def classify_query(state: SingleQueryState) -> SingleQueryState:
+            """Classify the query into a route"""
+
+            if self.router is None:
+                route = list(self.database_mapping.keys())[0]
+            else:
+                route = self.router(state["query"])
+                
+            state["route"] = route
+            state["embedder"] = self.embedder_map[route]
+            state["database"] = self.database_mapping[route]
             return state
 
         async def embed_query(state: SingleQueryState) -> SingleQueryState:
@@ -83,6 +96,7 @@ class SingleRetrievalTask:
         
         # Add nodes
         workflow.add_node("start_processing", start_processing)
+        workflow.add_node("classify_query", classify_query)
         workflow.add_node("embed_query", embed_query)
         workflow.add_node("search_database", search_database)
         workflow.add_node("process_results", process_results)
@@ -90,6 +104,8 @@ class SingleRetrievalTask:
         
         # Add edges
         workflow.add_edge(START, "start_processing")
+        workflow.add_edge("start_processing", "classify_query")
+        workflow.add_edge("classify_query", "embed_query")
         workflow.add_edge("start_processing", "embed_query")
         workflow.add_edge("embed_query", "search_database")
         workflow.add_edge("search_database", "process_results")
@@ -159,17 +175,12 @@ class BaseRetrieval():
         if len(queries_to_process) > 10:
             queries_to_process = random.sample(queries_to_process, 10)
             
-        route = list(self.database_mapping.keys())[0]
-        database = list(self.database_mapping.values())[0]
-        embedder = self.embedder_map[route]
-        
         # Create progress bar
         with tqdm(total=len(queries_to_process), desc=f"Processing {query_column} queries", unit="queries") as pbar:
             # Create SingleRetrievalTask
             retrieval_task = SingleRetrievalTask(
-                route=route,
-                database=database,
-                embedder=embedder,
+                database_mapping=self.database_mapping,
+                embedder_map=self.embedder_map,
                 semaphore=self.semaphore,
                 progress_bar=pbar
             )
