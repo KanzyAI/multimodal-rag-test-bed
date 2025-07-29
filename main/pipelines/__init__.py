@@ -8,8 +8,8 @@ TASK = os.getenv("TASK")
 
 try:
     multimodal_single_database_config = DatabaseConfig(
-        url=os.getenv("MULTIMODAL_SINGLE_DATABASE_URL"),
-        api_key=os.getenv("MULTIMODAL_SINGLE_DATABASE_API_KEY"),
+        url=os.getenv("QDRANT_URL"),
+        api_key=os.getenv("QDRANT_API_KEY"),
         collection_name=f"multimodal-single-{TASK}",
         vector_size=1024,
         vector_type="single",
@@ -19,8 +19,8 @@ except Exception as e:
 
 try:
     multimodal_multi_database_config = DatabaseConfig(
-        url=os.getenv("MULTIMODAL_MULTI_DATABASE_URL"),
-        api_key=os.getenv("MULTIMODAL_MULTI_DATABASE_API_KEY"),
+        url=os.getenv("QDRANT_URL"),
+        api_key=os.getenv("QDRANT_API_KEY"),
         collection_name=f"multimodal-multi-{TASK}",
             vector_size=128,
             vector_type="multi",
@@ -30,10 +30,10 @@ except Exception as e:
 
 try:
     text_multi_database_config = DatabaseConfig(
-        url=os.getenv("TEXT_MULTI_DATABASE_URL"),
-        api_key=os.getenv("TEXT_MULTI_DATABASE_API_KEY"),
+        url=os.getenv("QDRANT_URL"),
+        api_key=os.getenv("QDRANT_API_KEY"),
         collection_name=f"text-multi-{TASK}",
-            vector_size=1024,
+            vector_size=128,
             vector_type="multi",
         )
 except Exception as e:
@@ -41,8 +41,8 @@ except Exception as e:
 
 try:
     text_single_database_config = DatabaseConfig(
-        url=os.getenv("TEXT_SINGLE_DATABASE_URL"),
-        api_key=os.getenv("TEXT_SINGLE_DATABASE_API_KEY"),
+        url=os.getenv("QDRANT_URL"),
+        api_key=os.getenv("QDRANT_API_KEY"),
         collection_name=f"text-single-{TASK}",
         vector_size=4096,
         vector_type="single",
