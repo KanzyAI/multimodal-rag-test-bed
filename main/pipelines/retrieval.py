@@ -60,7 +60,7 @@ class SingleRetrievalTask:
             """Classify the query into a route"""
 
             if self.router is None:
-                route = list(self.database_mapping.keys())[0]
+                route = os.getenv("PIPELINE_NAME").lower()
             else:
                 route = self.router(state["query"])
                 

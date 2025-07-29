@@ -166,7 +166,7 @@ class BaseIndexing:
         all_keys = set(dataset["image_filename"])
         
         # Get single route
-        route = list(self.database_mapping.keys())[0]
+        route = os.getenv("PIPELINE_NAME").lower()
         database = self.database_mapping[route]
         
         keys_to_process = all_keys - indexed_files

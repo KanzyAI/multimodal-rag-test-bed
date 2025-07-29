@@ -6,102 +6,81 @@ __all__ = ["database_mapping", "embedder_mapping", "TASK"]
 
 TASK = os.getenv("TASK")
 
-try:
-    multimodal_single_database_config = DatabaseConfig(
-        url=os.getenv("QDRANT_URL"),
-        api_key=os.getenv("QDRANT_API_KEY"),
-        collection_name=f"multimodal-single-{TASK}",
-        vector_size=1024,
-        vector_type="single",
-    )
-except Exception as e:
-    multimodal_single_database_config = None
-
-try:
-    multimodal_multi_database_config = DatabaseConfig(
-        url=os.getenv("QDRANT_URL"),
-        api_key=os.getenv("QDRANT_API_KEY"),
-        collection_name=f"multimodal-multi-{TASK}",
-            vector_size=128,
-            vector_type="multi",
-        )
-except Exception as e:
-    multimodal_multi_database_config = None
-
-try:
-    text_multi_database_config = DatabaseConfig(
-        url=os.getenv("QDRANT_URL"),
-        api_key=os.getenv("QDRANT_API_KEY"),
-        collection_name=f"text-multi-{TASK}",
-            vector_size=128,
-            vector_type="multi",
-        )
-except Exception as e:
-    text_multi_database_config = None
-
-try:
-    text_single_database_config = DatabaseConfig(
-        url=os.getenv("QDRANT_URL"),
-        api_key=os.getenv("QDRANT_API_KEY"),
-        collection_name=f"text-single-{TASK}",
-        vector_size=4096,
-        vector_type="single",
-    )
-except Exception as e:
-    text_single_database_config = None
+PIPELINE_NAME = os.getenv("PIPELINE_NAME")
 
 database_mapping = {}
 
-for key, value in os.environ.items():
-    if key.startswith("MULTIMODAL_SINGLE_DATABASE_NAME"):
-        database_mapping[key.split("_")[0] + "-" + key.split("_")[1]] = VectorDatabaseFactory.create_database(value, multimodal_single_database_config)
-    elif key.startswith("MULTIMODAL_MULTI_DATABASE_NAME"):
-        database_mapping[key.split("_")[0] + "-" + key.split("_")[1]] = VectorDatabaseFactory.create_database(value, multimodal_multi_database_config)
-    elif key.startswith("TEXT_MULTI_DATABASE_NAME"):
-        database_mapping[key.split("_")[0] + "-" + key.split("_")[1]] = VectorDatabaseFactory.create_database(value, text_multi_database_config)
-    elif key.startswith("TEXT_SINGLE_DATABASE_NAME"):
-        database_mapping[key.split("_")[0] + "-" + key.split("_")[1]] = VectorDatabaseFactory.create_database(value, text_single_database_config)
+multimodal_single_database_config = DatabaseConfig(
+    url=os.getenv("QDRANT_URL"),
+    api_key=os.getenv("QDRANT_API_KEY"),
+    collection_name=f"multimodal-single-{TASK}",
+    vector_size=1024,
+    vector_type="single",
+)
 
-try:
+multimodal_multi_database_config = DatabaseConfig(
+    url=os.getenv("QDRANT_URL"),
+    api_key=os.getenv("QDRANT_API_KEY"),
+    collection_name=f"multimodal-multi-{TASK}",
+        vector_size=128,
+        vector_type="multi",
+    )
+
+text_single_database_config = DatabaseConfig(
+    url=os.getenv("QDRANT_URL"),
+    api_key=os.getenv("QDRANT_API_KEY"),
+    collection_name=f"text-single-{TASK}",
+    vector_size=4096,
+    vector_type="single",
+)
+
+text_multi_database_config = DatabaseConfig(
+    url=os.getenv("QDRANT_URL"),
+    api_key=os.getenv("QDRANT_API_KEY"),
+    collection_name=f"text-multi-{TASK}",
+        vector_size=128,
+        vector_type="multi",
+    )
+
+if PIPELINE_NAME == "MULTIMODAL-SINGLE":
+    database_mapping["multimodal-single"] = VectorDatabaseFactory.create_database(multimodal_single_database_config)
+elif PIPELINE_NAME == "MULTIMODAL-MULTI":
+    database_mapping["multimodal-multi"] = VectorDatabaseFactory.create_database(multimodal_multi_database_config)
+elif PIPELINE_NAME == "TEXT-MULTI":
+    database_mapping["text-multi"] = VectorDatabaseFactory.create_database(text_multi_database_config)
+elif PIPELINE_NAME == "TEXT-SINGLE":
+    database_mapping["text-single"] = VectorDatabaseFactory.create_database(text_single_database_config)
+else:
+    for pipeline in ["multimodal-single", "multimodal-multi", "text-multi", "text-single"]:
+        database_mapping[pipeline] = VectorDatabaseFactory.create_database(globals()[f"{pipeline}_database_config"])
+
+if PIPELINE_NAME == "MULTIMODAL-SINGLE":
     multimodal_single_embedder_config = EmbedderConfig(
         model_name=os.getenv("MULTIMODAL_SINGLE_EMBEDDER"),
     )
-except Exception as e:
-    multimodal_single_embedder_config = None
 
-try:
     multimodal_multi_embedder_config = EmbedderConfig(
         model_name=os.getenv("MULTIMODAL_MULTI_EMBEDDER"),
     )
-except Exception as e:
-    multimodal_multi_embedder_config = None
 
-try:
     text_multi_embedder_config = EmbedderConfig(
         model_name=os.getenv("TEXT_MULTI_EMBEDDER"),
     )
-except Exception as e:
-    text_multi_embedder_config = None
 
-try:
     text_single_embedder_config = EmbedderConfig(
         model_name=os.getenv("TEXT_SINGLE_EMBEDDER"),
     )
-except Exception as e:
-    text_single_embedder_config = None
 
 embedder_mapping = {}
 
-for key, value in os.environ.items():
-    if key.startswith("MULTIMODAL_SINGLE_EMBEDDER"):
-        key = key.split("_")[0] + "-" + key.split("_")[1]
-        embedder_mapping[key] = EmbedderFactory.create_embedder(value, multimodal_single_embedder_config)
-    elif key.startswith("MULTIMODAL_MULTI_EMBEDDER"):
-        key = key.split("_")[0] + "-" + key.split("_")[1]
-        embedder_mapping[key] = EmbedderFactory.create_embedder(value, multimodal_multi_embedder_config)
-    elif key.startswith("TEXT_MULTI_EMBEDDER"):
-        key = key.split("_")[0] + "-" + key.split("_")[1]
-        embedder_mapping[key] = EmbedderFactory.create_embedder(value, text_multi_embedder_config)
-    elif key.startswith("TEXT_SINGLE_EMBEDDER"):
-        key = key.split("_")[0] + "-" + key.split("_")[1]
-        embedder_mapping[key] = EmbedderFactory.create_embedder(value, text_single_embedder_config)
+if PIPELINE_NAME == "MULTIMODAL-SINGLE":
+    embedder_mapping["multimodal-single"] = EmbedderFactory.create_embedder(os.getenv("MULTIMODAL_SINGLE_EMBEDDER"), multimodal_single_embedder_config)
+elif PIPELINE_NAME == "MULTIMODAL-MULTI":
+    embedder_mapping["multimodal-multi"] = EmbedderFactory.create_embedder(os.getenv("MULTIMODAL_MULTI_EMBEDDER"), multimodal_multi_embedder_config)
+elif PIPELINE_NAME == "TEXT-MULTI":
+    embedder_mapping["text-multi"] = EmbedderFactory.create_embedder(os.getenv("TEXT_MULTI_EMBEDDER"), text_multi_embedder_config)
+elif PIPELINE_NAME == "TEXT-SINGLE":
+    embedder_mapping["text-single"] = EmbedderFactory.create_embedder(os.getenv("TEXT_SINGLE_EMBEDDER"), text_single_embedder_config)
+else:
+    for pipeline in ["multimodal-single", "multimodal-multi", "text-multi", "text-single"]:
+        embedder_mapping[pipeline] = EmbedderFactory.create_embedder(os.getenv(f"{pipeline.upper()}_EMBEDDER"), globals()[f"{pipeline}_embedder_config"])
