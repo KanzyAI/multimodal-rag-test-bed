@@ -8,7 +8,7 @@ from main.vector_dabases import BaseVectorDatabase
 from tqdm.asyncio import tqdm
 from langsmith import traceable
 from main.pipelines import database_mapping, embedder_mapping, TASK
-from main.pipelines.preprocessor import Preprocessor
+from main.preprocessing.ocr import Preprocessor
 
 class SingleDocumentState(TypedDict):
     """State for single document processing workflow"""
@@ -49,21 +49,31 @@ class SingleIndexingTask:
 
         def should_preprocess(state: SingleDocumentState) -> str:
             """Determine if preprocessing is needed"""
-            if self.route.startswith("text") and self.preprocessor:
+            if self.route.startswith("TEXT") and self.preprocessor:
                 return "preprocess_document"
             else:
                 return "embed_document"
 
         async def preprocess_document(state: SingleDocumentState) -> SingleDocumentState:
             """Preprocess document for text routes"""
-            processed_doc = await self.preprocessor(state["image"])
+            processed_doc = await self.preprocessor(state["image"], state["filename"])
             state["image"] = processed_doc
             return state
 
         async def embed_document(state: SingleDocumentState) -> SingleDocumentState:
             """Embed the document using the embedder"""
-            embedding = await self.embedder.embed_document(state["image"])
-            state["embedding"] = embedding
+            # Handle different input types after preprocessing
+            if isinstance(state["image"], list):
+                # Text route: state["image"] contains list of text chunks
+                embeddings = []
+                for chunk_text in state["image"]:
+                    chunk_embedding = await self.embedder.embed_document(chunk_text)
+                    embeddings.append(chunk_embedding)
+                state["embedding"] = embeddings
+            else:
+                # Visual route: state["image"] contains image object
+                embedding = await self.embedder.embed_document(state["image"])
+                state["embedding"] = embedding
             return state
 
         async def index_document(state: SingleDocumentState) -> SingleDocumentState:
@@ -71,8 +81,8 @@ class SingleIndexingTask:
             embedding = state["embedding"]
             metadata = state["metadata"]
             
-            if self.route.startswith("text"):
-                # Handle text embeddings (multiple chunks)
+            if self.route.startswith("TEXT"):
+                # Handle text embeddings (multiple chunk)
                 for i, emb in enumerate(embedding):
                     chunk_metadata = metadata.copy()
                     chunk_metadata["chunk_id"] = i
@@ -142,7 +152,8 @@ class BaseIndexing:
     ):
         self.semaphore = asyncio.Semaphore(2) 
         self.embedder_map = embedder_mapping
-        self.preprocessor = Preprocessor(f"main/{TASK}_chunks.json")
+        os.makedirs(f"main/chunks/", exist_ok=True)
+        self.preprocessor = Preprocessor(f"main/chunks/{TASK}_chunks.json")
         self.database_mapping = database_mapping
 
     async def process_all_files(self, indexed_files: set):

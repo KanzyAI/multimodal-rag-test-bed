@@ -1,102 +1,112 @@
 {
-    "What is the importance of the SKLM server in the context of IBM FlashSystem A9000 and A9000R?": {
+    "How can a remote support proxy server be configured in IBM FlashSystem 9100?": {
         "selected_route": "MULTIMODAL-SINGLE",
         "results": {
-            "IBM Storage FlashSystem 9500 Product Guide for IBM Storage Virtualize 8.6_page_19.png": 0.30003947,
-            "IBM FlashSystem 9100 Architecture, Performance, and Implementation_page_101.png": 0.288968146,
-            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_207.png": 0.274464875,
-            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_269.png": 0.27178371,
-            "FlashSystem 900 Product Guide_page_19.png": 0.262897581
-        }
+            "The Definitive Guide to IBM Storage FlashSystem 5300 Port Configuration_page_16.png": 0.333665073,
+            "IBM FlashSystem 840 Product Guide_page_15.png": 0.294361562,
+            "IBM FlashSystem 9100 Architecture, Performance, and Implementation_page_27.png": 0.291836202,
+            "IBM FlashSystem 5000 Family Products_page_20.png": 0.258164197,
+            "IBM FlashSystem A9000 and A9000R Architecture and Implementation_page_58.png": 0.251208216
+        },
+        "retrieval_latency": 0.9658858776092529
     },
-    "What is the range of validity periods that can be set for a new certificate on the IBM Security Key Lifecycle Manager server?": {
+    "What are the two forms of connection solutions mentioned for IBM FlashSystem 9100?": {
         "selected_route": "MULTIMODAL-SINGLE",
         "results": {
-            "IBM Storage FlashSystem 9500 Product Guide for IBM Storage Virtualize 8.6_page_19.png": 0.144922361,
-            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_123.png": 0.130542502,
-            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_269.png": 0.1294882,
-            "Data Resiliency Designs A Deep Dive into IBM Storage Safeguarded snapshots_page_47.png": 0.125922397,
-            "IBM FlashSystem 840 Product Guide_page_13.png": 0.110572815
-        }
+            "IBM FlashSystem 5000 Family Products_page_20.png": 0.363070846,
+            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_12.png": 0.3611691,
+            "The Definitive Guide to IBM Storage FlashSystem 5300 Port Configuration_page_16.png": 0.349930495,
+            "IBM FlashSystem A9000 and A9000R Architecture and Implementation_page_58.png": 0.339995891,
+            "IBM FlashSystem 9100 Architecture, Performance, and Implementation_page_27.png": 0.317446709
+        },
+        "retrieval_latency": 3.860680103302002
     },
-    "Are there any draft materials available for IBM FlashSystem 5000?": {
+    "How is data handled in RAID 0 mode on IBM FlashSystem 720 and IBM FlashSystem 820?": {
         "selected_route": "MULTIMODAL-SINGLE",
         "results": {
-            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_269.png": 0.291422606,
-            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_123.png": 0.259597957,
-            "IBM FlashSystem 9100 Architecture, Performance, and Implementation_page_101.png": 0.246192664,
-            "IBM FlashSystem 840 Product Guide_page_13.png": 0.243994847,
-            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_54.png": 0.228308886
-        }
+            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_12.png": 0.292228431,
+            "IBM FlashSystem 5000 Family Products_page_2.png": 0.265715808,
+            "IBM FlashSystem 840 Product Guide_page_15.png": 0.247515842,
+            "IBM FlashSystem 5000 Family Products_page_20.png": 0.237667397,
+            "The Definitive Guide to IBM Storage FlashSystem 5300 Port Configuration_page_16.png": 0.236205563
+        },
+        "retrieval_latency": 0.9807140827178955
     },
-    "What is the maximum usable capacity of the IBM FlashSystem 9200 with one control enclosure?": {
+    "What are the key components of a server's name in IBM FlashSystem 9100?": {
         "selected_route": "MULTIMODAL-SINGLE",
         "results": {
-            "IBM FlashSystem 840 Product Guide_page_13.png": 0.348611206,
-            "IBM FlashSystem 9100 Architecture, Performance, and Implementation_page_101.png": 0.330910593,
-            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_269.png": 0.322056234,
-            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_207.png": 0.312824041,
-            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_123.png": 0.302353
-        }
+            "IBM FlashSystem 5000 Family Products_page_2.png": 0.342567116,
+            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_12.png": 0.338004,
+            "IBM FlashSystem 5000 Family Products_page_20.png": 0.297125816,
+            "The Definitive Guide to IBM Storage FlashSystem 5300 Port Configuration_page_16.png": 0.290917546,
+            "IBM FlashSystem 840 Product Guide_page_15.png": 0.287800193
+        },
+        "retrieval_latency": 0.9388630390167236
     },
-    "What are the different types of 2.5-inch drives supported by the IBM FlashSystem 5000?": {
+    "What are the benefits of full storage virtualization in IBM FlashSystem A9000 and A9000R?": {
         "selected_route": "MULTIMODAL-SINGLE",
         "results": {
-            "IBM Storage FlashSystem 9500 Product Guide for IBM Storage Virtualize 8.6_page_19.png": 0.358586937,
-            "IBM FlashSystem 840 Product Guide_page_13.png": 0.353440046,
-            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_269.png": 0.34801954,
-            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_123.png": 0.289067268,
-            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_54.png": 0.250979811
-        }
+            "IBM FlashSystem 9100 Architecture, Performance, and Implementation_page_27.png": 0.399457544,
+            "The Definitive Guide to IBM Storage FlashSystem 5300 Port Configuration_page_16.png": 0.361681312,
+            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_12.png": 0.317444056,
+            "IBM FlashSystem 840 Product Guide_page_15.png": 0.306685328,
+            "IBM Storage FlashSystem 7300 Product Guide Updated for IBM Storage Virtualize 8.7_page_22.png": 0.2667858
+        },
+        "retrieval_latency": 0.9558920860290527
     },
-    "How many flash enclosures are there in the maximum configuration of IBM FlashSystem A9000R Model 415?": {
+    "What types of power distribution units are listed for IBM FlashSystem 720 and IBM FlashSystem 820?": {
         "selected_route": "MULTIMODAL-SINGLE",
         "results": {
-            "IBM FlashSystem 840 Product Guide_page_13.png": 0.406072646,
-            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_269.png": 0.352320433,
-            "IBM FlashSystem 9100 Architecture, Performance, and Implementation_page_101.png": 0.340453207,
-            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_207.png": 0.302557558,
-            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_54.png": 0.276641876
-        }
+            "IBM FlashSystem 5000 Family Products_page_20.png": 0.358939558,
+            "IBM FlashSystem 5000 Family Products_page_2.png": 0.357234627,
+            "IBM Storage FlashSystem 7300 Product Guide Updated for IBM Storage Virtualize 8.7_page_22.png": 0.347343445,
+            "IBM FlashSystem A9000 and A9000R Architecture and Implementation_page_58.png": 0.333333641,
+            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_12.png": 0.324030608
+        },
+        "retrieval_latency": 0.973675012588501
     },
-    "What is the maximum number of drives in a RAID array for DRAID 1 in the IBM FlashSystem 7300?": {
+    "What is the default IP address range for the dedicated management port on the IBM FlashSystem 5300?": {
         "selected_route": "MULTIMODAL-SINGLE",
         "results": {
-            "IBM FlashSystem 840 Product Guide_page_13.png": 0.384039,
-            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_269.png": 0.344293,
-            "IBM FlashSystem 9100 Architecture, Performance, and Implementation_page_101.png": 0.281404495,
-            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_207.png": 0.247548416,
-            "IBM Storage FlashSystem 9500 Product Guide for IBM Storage Virtualize 8.6_page_19.png": 0.197338402
-        }
+            "The Definitive Guide to IBM Storage FlashSystem 5300 Port Configuration_page_16.png": 0.358029485,
+            "IBM FlashSystem 5000 Family Products_page_20.png": 0.310196608,
+            "IBM FlashSystem 840 Product Guide_page_15.png": 0.269859254,
+            "IBM FlashSystem 5000 Family Products_page_2.png": 0.235064372,
+            "IBM FlashSystem A9000 and A9000R Architecture and Implementation_page_58.png": 0.225932404
+        },
+        "retrieval_latency": 0.9770510196685791
     },
-    "What are the two main purposes of using a quorum disk in IBM FlashSystem?": {
+    "How many management IPs can be configured on an IBM Storage FlashSystem 5300?": {
         "selected_route": "MULTIMODAL-SINGLE",
         "results": {
-            "IBM FlashSystem 840 Product Guide_page_13.png": 0.248898551,
-            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_207.png": 0.238723353,
-            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_269.png": 0.221285567,
-            "IBM Storage FlashSystem 9500 Product Guide for IBM Storage Virtualize 8.6_page_19.png": 0.172195509,
-            "IBM FlashSystem 9100 Architecture, Performance, and Implementation_page_101.png": 0.168260276
-        }
+            "The Definitive Guide to IBM Storage FlashSystem 5300 Port Configuration_page_16.png": 0.41241765,
+            "IBM FlashSystem 5000 Family Products_page_20.png": 0.389942944,
+            "IBM FlashSystem 840 Product Guide_page_15.png": 0.346160769,
+            "IBM Storage FlashSystem 7300 Product Guide Updated for IBM Storage Virtualize 8.7_page_22.png": 0.287614018,
+            "IBM FlashSystem 5000 Family Products_page_2.png": 0.276295483
+        },
+        "retrieval_latency": 0.952996015548706
     },
-    "What is the compression technology used in IBM FlashSystem A9000 and A9000R?": {
+    "Where are the binary files for other supported operating systems located after installing the Data Reduction Estimator tool on Windows?": {
         "selected_route": "MULTIMODAL-SINGLE",
         "results": {
-            "IBM FlashSystem 840 Product Guide_page_13.png": 0.29726246,
-            "IBM Storage FlashSystem 9500 Product Guide for IBM Storage Virtualize 8.6_page_19.png": 0.291436255,
-            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_54.png": 0.263490707,
-            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_269.png": 0.257841796,
-            "IBM FlashSystem 9100 Architecture, Performance, and Implementation_page_101.png": 0.234339371
-        }
+            "IBM FlashSystem 5000 Family Products_page_20.png": 0.148783565,
+            "IBM FlashSystem 840 Product Guide_page_15.png": 0.125635877,
+            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_12.png": 0.105860502,
+            "IBM FlashSystem 5000 Family Products_page_2.png": 0.0932132676,
+            "IBM FlashSystem 9100 Architecture, Performance, and Implementation_page_27.png": 0.0658345819
+        },
+        "retrieval_latency": 0.9969959259033203
     },
-    "How can you limit the output of the `lsenclosurestats` command to a specific node in IBM FlashSystem 9100?": {
+    "What should you do if the migration command fails due to an offline volume with IBM FlashSystem?": {
         "selected_route": "MULTIMODAL-SINGLE",
         "results": {
-            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_269.png": 0.319779694,
-            "IBM FlashSystem 9100 Architecture, Performance, and Implementation_page_101.png": 0.288848132,
-            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_207.png": 0.278586537,
-            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_123.png": 0.249242529,
-            "FlashSystem 900 Product Guide_page_19.png": 0.201492742
-        }
+            "IBM FlashSystem 9200 and 9100 Best Practices and Performance Guidelines_page_12.png": 0.239176422,
+            "IBM FlashSystem 9100 Architecture, Performance, and Implementation_page_27.png": 0.237959459,
+            "Automating IBM storage FlashSystem_page_19.png": 0.222182423,
+            "IBM FlashSystem 5000 Family Products_page_2.png": 0.206041127,
+            "The Definitive Guide to IBM Storage FlashSystem 5300 Port Configuration_page_16.png": 0.20491299
+        },
+        "retrieval_latency": 0.951430082321167
     }
 }

@@ -4,7 +4,7 @@ from main.vector_dabases import DatabaseConfig, VectorDatabaseFactory
 
 __all__ = ["database_mapping", "embedder_mapping", "TASK"]
 
-TASK = os.getenv("DATASET").split('/')[-1].split('_')[-1].split('-')[-1].lower()
+TASK = os.getenv("TASK")
 
 try:
     multimodal_single_database_config = DatabaseConfig(
@@ -33,7 +33,7 @@ try:
         url=os.getenv("TEXT_MULTI_DATABASE_URL"),
         api_key=os.getenv("TEXT_MULTI_DATABASE_API_KEY"),
         collection_name=f"text-multi-{TASK}",
-            vector_size=128,
+            vector_size=1024,
             vector_type="multi",
         )
 except Exception as e:
@@ -44,7 +44,7 @@ try:
         url=os.getenv("TEXT_SINGLE_DATABASE_URL"),
         api_key=os.getenv("TEXT_SINGLE_DATABASE_API_KEY"),
         collection_name=f"text-single-{TASK}",
-        vector_size=128,
+        vector_size=1024,
         vector_type="single",
     )
 except Exception as e:

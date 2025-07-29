@@ -4,7 +4,6 @@ from ..base_embedder import BaseEmbedder, EmbedderConfig, EmbedderFactory
 
 class LinqEmbedder(BaseEmbedder):
     def __init__(self, config: EmbedderConfig):
-        # Set device in config if not provided
         if config.device is None:
             config.device = "cuda" if torch.cuda.is_available() else "cpu"
         

@@ -80,7 +80,6 @@ class EmbedderFactory:
         
         embedder_class = cls._embedders[name]
         
-        # Convert dict config to EmbedderConfig if needed
         if isinstance(config, dict):
             config = EmbedderConfig(**config)
         

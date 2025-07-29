@@ -2,6 +2,7 @@ import os
 import json
 import random
 import asyncio
+import time
 from datasets import load_dataset
 from typing import Dict, Any, TypedDict
 from langgraph.graph import StateGraph, START, END
@@ -19,6 +20,8 @@ class SingleQueryState(TypedDict):
     retrieved_results: Any
     results_dict: Dict[str, float]
     processed: bool
+    embed_latency: float
+    search_latency: float
 
 
 class SingleRetrievalTask:
@@ -49,6 +52,8 @@ class SingleRetrievalTask:
             state["retrieved_results"] = None
             state["results_dict"] = {}
             state["processed"] = False
+            state["embed_latency"] = 0.0
+            state["search_latency"] = 0.0
             return state
 
         async def classify_query(state: SingleQueryState) -> SingleQueryState:
@@ -66,14 +71,22 @@ class SingleRetrievalTask:
 
         async def embed_query(state: SingleQueryState) -> SingleQueryState:
             """Embed the query using the embedder"""
+            start_time = time.time()
             query_embedding = await state["embedder"].embed_query(state["query"])
+            end_time = time.time()
+            
             state["query_embedding"] = query_embedding
+            state["embed_latency"] = end_time - start_time
             return state
 
         async def search_database(state: SingleQueryState) -> SingleQueryState:
             """Search the database with the query embedding"""
+            start_time = time.time()
             retrieved = await state["database"].search(state["query_embedding"])
+            end_time = time.time()
+            
             state["retrieved_results"] = retrieved
+            state["search_latency"] = end_time - start_time
             return state
 
         def process_results(state: SingleQueryState) -> SingleQueryState:
@@ -126,10 +139,14 @@ class SingleRetrievalTask:
             initial_state = SingleQueryState(
                 query=query,
                 route="",
+                embedder=None,
+                database=None,
                 query_embedding=None,
                 retrieved_results=None,
                 results_dict={},
-                processed=False
+                processed=False,
+                embed_latency=0.0,
+                search_latency=0.0
             )
             
             # Execute the graph
@@ -137,7 +154,8 @@ class SingleRetrievalTask:
             
             return {
                 "selected_route": final_state["route"],
-                "results": final_state["results_dict"]
+                "results": final_state["results_dict"],
+                "retrieval_latency": final_state["embed_latency"] + final_state["search_latency"]
             }
 
 
