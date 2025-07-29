@@ -17,7 +17,7 @@ class Preprocessing:
     async def preprocess_document(self, filename: str, image: Any) -> str:
         """Preprocess a single document"""
         async with self.semaphore:
-            processed_text = await self.ocr_engine(image, filename, apply_captioning=True, apply_chunking=False)
+            processed_text = await self.ocr_engine(image, filename, apply_captioning=True)
             return processed_text
     
     async def process_all_files(self, processed_files: set = None):
@@ -62,14 +62,14 @@ class Preprocessing:
         print(f"Preprocessing completed for {total_docs} documents")
     
     def get_processed_files(self) -> set:
-        preprocessed_file = f"main/preprocessing/full_text/{TASK}_chunks.json"
+        preprocessed_file = f"main/preprocessing/texts/{TASK}_full_text.json"
         
         if not os.path.exists(preprocessed_file):
             return set()
         
         with open(preprocessed_file, 'r') as f:
             saved_texts = json.load(f)
-            processed = {k for k, v in saved_texts.items() if v != []}
+            processed = {k for k, v in saved_texts.items() if v != {}}
         return processed
     
     async def __call__(self):

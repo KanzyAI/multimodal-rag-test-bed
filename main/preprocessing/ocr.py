@@ -7,7 +7,6 @@ import fcntl
 from mistralai import Mistral
 from mistralai.models import File
 from main.preprocessing.captioning import captioning, parse_image_references
-from main.preprocessing.chunking import chunk_financial_markdown
 
 class OCR_Engine:
     def __init__(self, output_path):
@@ -17,9 +16,6 @@ class OCR_Engine:
         
         self.client = Mistral(api_key=self.api_key) 
         self.output_path = output_path
-        
-        # Create chunks output path
-        self.chunks_output_path = output_path.replace('_full_text.json', '_chunks.json')
         
         logging.basicConfig(
             filename=self.output_path,
@@ -63,16 +59,15 @@ class OCR_Engine:
         except Exception as e:
             raise e
         
-    async def __call__(self, image, filename, apply_captioning=True, apply_chunking=False):
-        """Complete preprocessing pipeline: OCR → Captioning → Chunking → Save"""
+    async def __call__(self, image, filename, apply_captioning=True):
+        """Complete preprocessing pipeline: OCR → Captioning → Save"""
 
-        # Initialize files if they don't exist
-        for file_path in [self.output_path, self.chunks_output_path]:
-            if not os.path.exists(file_path):
-                os.makedirs(os.path.dirname(file_path), exist_ok=True)
-                with open(file_path, "w") as f:
-                    fcntl.flock(f.fileno(), fcntl.LOCK_EX)
-                    json.dump({}, f, indent=4)
+        # Initialize file if it doesn't exist
+        if not os.path.exists(self.output_path):
+            os.makedirs(os.path.dirname(self.output_path), exist_ok=True)
+            with open(self.output_path, "w") as f:
+                fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+                json.dump({}, f, indent=4)
 
         # Check if already processed
         with open(self.output_path, "r+") as f:
@@ -81,7 +76,6 @@ class OCR_Engine:
             
         if filename in saved_texts:
             return saved_texts[filename]["text"]
-
 
         # Step 1: OCR
         markdown_text = await self.ocr(image, filename)
@@ -105,18 +99,7 @@ class OCR_Engine:
         else:
             final_text = markdown_text
         
-        # Step 3: Chunking
-        if apply_chunking:
-            try:
-                chunk_documents = chunk_financial_markdown(final_text)
-                # Extract just the text content (no metadata)
-                chunks = [chunk.page_content for chunk in chunk_documents]
-            except Exception as e:
-                chunks = [final_text]  # Fallback to full text as single chunk
-        else:
-            chunks = [final_text]
-        
-        # Step 4: Save full text
+        # Step 3: Save full text
         with open(self.output_path, "r+") as f:
             fcntl.flock(f.fileno(), fcntl.LOCK_EX)
             saved_texts = json.load(f)
@@ -124,15 +107,6 @@ class OCR_Engine:
             f.seek(0)
             f.truncate()
             json.dump(saved_texts, f, indent=4)
-
-        # Step 5: Save chunks  
-        with open(self.chunks_output_path, "r+") as f:
-            fcntl.flock(f.fileno(), fcntl.LOCK_EX)
-            saved_chunks = json.load(f)
-            saved_chunks[filename] = {"chunks": chunks}
-            f.seek(0)
-            f.truncate()
-            json.dump(saved_chunks, f, indent=4)
 
         return final_text
     
