@@ -5,6 +5,7 @@ from datasets import load_dataset
 from typing import Any
 from tqdm.asyncio import tqdm
 from main.preprocessing.ocr import OCR_Engine
+from main.preprocessing.chunking import ChunkingEngine
 from main.pipelines import TASK
 
 class Preprocessing:    
@@ -13,6 +14,7 @@ class Preprocessing:
     def __init__(self, **kwargs):
         self.semaphore = asyncio.Semaphore(20)
         self.ocr_engine = OCR_Engine(f"main/preprocessing/texts/{TASK}_full_text.json")
+        self.chunking_engine = ChunkingEngine()
     
     async def preprocess_document(self, filename: str, image: Any) -> str:
         """Preprocess a single document"""
@@ -74,7 +76,8 @@ class Preprocessing:
     
     async def __call__(self):
         processed_files = self.get_processed_files()
-        await self.process_all_files(processed_files)
+        await self.process_all_files(processed_files)        
+        self.chunking_engine.process_all_files()
 
 if __name__ == "__main__":
     preprocessing = Preprocessing()

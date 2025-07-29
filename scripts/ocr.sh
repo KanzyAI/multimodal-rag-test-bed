@@ -1,6 +1,6 @@
 python -c "from dotenv import load_dotenv; load_dotenv('.env')"
 
-export TASK=vidore_test
-export DATASET=vidore/tatdqa_test
+export TASK=finreport
+export DATASET=ibm-research/REAL-MM-RAG_FinReport
 
 python -m main.preprocessing.run

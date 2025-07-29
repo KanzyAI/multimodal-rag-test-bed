@@ -1,6 +1,7 @@
 import os
 import asyncio
 import random
+import json
 from datasets import load_dataset
 from typing import Dict, Any, TypedDict
 from langgraph.graph import StateGraph, START, END
@@ -8,32 +9,30 @@ from main.vector_dabases import BaseVectorDatabase
 from tqdm.asyncio import tqdm
 from langsmith import traceable
 from main.pipelines import database_mapping, embedder_mapping, TASK
-from main.preprocessing.ocr import Preprocessor
 
 class SingleDocumentState(TypedDict):
     """State for single document processing workflow"""
     filename: str
     image: Any
+    chunks: Dict[str, Any]
     metadata: Dict[str, Any]
     embedding: Any
-    processed: bool
+    processed: bool 
 
 class SingleIndexingTask:
     """Handles indexing for a single route/database combination"""
     
-    def __init__(
+    def __init__(   
         self,
         route: str,
         database: BaseVectorDatabase,
         embedder: Any,
-        preprocessor: Any = None,
         semaphore: asyncio.Semaphore = None,
         progress_bar: tqdm = None
     ):
         self.route = route
         self.database = database
         self.embedder = embedder
-        self.preprocessor = preprocessor
         self.semaphore = semaphore or asyncio.Semaphore(10)
         self.progress_bar = progress_bar
 
@@ -49,15 +48,14 @@ class SingleIndexingTask:
 
         def should_preprocess(state: SingleDocumentState) -> str:
             """Determine if preprocessing is needed"""
-            if self.route.startswith("TEXT") and self.preprocessor:
+            if self.route.startswith("TEXT"):
                 return "preprocess_document"
             else:
                 return "embed_document"
 
         async def preprocess_document(state: SingleDocumentState) -> SingleDocumentState:
             """Preprocess document for text routes"""
-            processed_doc = await self.preprocessor(state["image"], state["filename"])
-            state["image"] = processed_doc
+            state["image"] = state["chunks"]
             return state
 
         async def embed_document(state: SingleDocumentState) -> SingleDocumentState:
@@ -129,7 +127,7 @@ class SingleIndexingTask:
         return workflow.compile()
 
     @traceable(name="process_document", tags=["single_indexing_task"])
-    async def process_document(self, filename: str, image: Any) -> None:
+    async def process_document(self, filename: str, image: Any, chunks: Dict[str, Any]) -> None:
         """Process a single document using LangGraph"""
         async with self.semaphore:
             graph = self.create_document_graph()
@@ -137,6 +135,7 @@ class SingleIndexingTask:
             initial_state = SingleDocumentState(
                 filename=filename,
                 image=image,
+                chunks=chunks,
                 metadata={},
                 embedding=None,
                 processed=False
@@ -152,8 +151,11 @@ class BaseIndexing:
     ):
         self.semaphore = asyncio.Semaphore(2) 
         self.embedder_map = embedder_mapping
-        os.makedirs(f"main/chunks/", exist_ok=True)
-        self.preprocessor = Preprocessor(f"main/chunks/{TASK}_chunks.json")
+
+        chunks_path = os.path.join(os.path.dirname(__file__), "..", "preprocessing", "chunks", f"{TASK}_chunks.json")
+        with open(chunks_path, "r") as f:
+            self.chunks = json.load(f)
+
         self.database_mapping = database_mapping
 
     async def process_all_files(self, indexed_files: set):
@@ -184,11 +186,11 @@ class BaseIndexing:
             
             if keys_to_process:
                 embedder = self.embedder_map[route]
+
                 indexing_task = SingleIndexingTask(
                     route=route,
                     database=database,
                     embedder=embedder,
-                    preprocessor=self.preprocessor,
                     semaphore=self.semaphore,
                     progress_bar=pbar
                 )
@@ -196,7 +198,7 @@ class BaseIndexing:
                 for row in dataset:
                     if row["image_filename"] in keys_to_process:
                         keys_to_process.remove(row["image_filename"])
-                        task = indexing_task.process_document(row["image_filename"], row["image"])
+                        task = indexing_task.process_document(row["image_filename"], row["image"], self.chunks[row["image_filename"]]["chunks"])
                         tasks.append(task)
             
             if tasks:
