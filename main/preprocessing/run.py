@@ -63,14 +63,15 @@ class Preprocessing:
         print(f"Preprocessing completed for {total_docs} documents")
     
     def get_processed_files(self) -> set:
-        preprocessed_file = f"main/preprocessing/full_text/{TASK}_full_text.json"
+        preprocessed_file = f"main/preprocessing/full_text/{TASK}_chunks.json"
         
         if not os.path.exists(preprocessed_file):
             return set()
         
         with open(preprocessed_file, 'r') as f:
             saved_texts = json.load(f)
-            return set(saved_texts.keys())
+            processed = {k for k, v in saved_texts.items() if v != []}
+        return processed
     
     async def __call__(self):
         processed_files = self.get_processed_files()
