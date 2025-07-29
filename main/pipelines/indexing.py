@@ -149,7 +149,7 @@ class BaseIndexing:
         self,
         **kwargs 
     ):
-        self.semaphore = asyncio.Semaphore(2) 
+        self.semaphore = asyncio.Semaphore(10) 
         self.embedder_map = embedder_mapping
 
         chunks_path = os.path.join(os.path.dirname(__file__), "..", "preprocessing", "chunks", f"{TASK}_chunks.json")
@@ -170,12 +170,7 @@ class BaseIndexing:
         database = self.database_mapping[route]
         
         keys_to_process = all_keys - indexed_files
-        
-        if len(keys_to_process) > 10:
-            keys_to_process = random.sample(list(keys_to_process), 10)
-        else:
-            keys_to_process = list(keys_to_process)
-        
+            
         total_docs = len(keys_to_process)
         
         if total_docs == 0:
@@ -208,7 +203,6 @@ class BaseIndexing:
     async def __call__(self):
         """Main method that orchestrates the entire indexing process"""
         
-        # Get single route
         route = list(self.database_mapping.keys())[0]
         
         database = self.database_mapping[route]

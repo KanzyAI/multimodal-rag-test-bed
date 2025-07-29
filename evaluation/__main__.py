@@ -49,10 +49,10 @@ def get_expected_qrels(
     Load relevance judgments for a given query_column from the HF dataset,
     save them to disk, and return as a dict[q][doc] = 1.
     """
-    # Paths for caching on disk
-    out_dir = os.path.join(parent_dir, f"results/retrieval/{task.lower()}/{query_column}")
+    # Paths for caching on disk - updated to new structure
+    out_dir = os.path.join(parent_dir, f"results/{task.lower()}")
     os.makedirs(out_dir, exist_ok=True)
-    qrels_path = os.path.join(out_dir, "expected_qrels.json")
+    qrels_path = os.path.join(out_dir, f"expected_qrels_{query_column}.json")
     
     # If we've already written this file, load and return it
     if os.path.exists(qrels_path):
@@ -92,10 +92,21 @@ def evaluate_file(task, directory, fname, dataset_cache):
         dataset_cache=dataset_cache
     )
 
-    base = os.path.join(parent_dir, f"results/retrieval/{task.lower()}/{directory}")
+    # Updated path structure - no more retrieval subfolder
+    base = os.path.join(parent_dir, f"results/{task.lower()}/{directory}")
     run_path = os.path.join(base, fname)
     with open(run_path) as f:
-        run_qrels = json.load(f)
+        run_data = json.load(f)
+
+    # Extract actual qrels from nested structure - handle new format with metadata
+    run_qrels = {}
+    for query, data in run_data.items():
+        if isinstance(data, dict) and 'results' in data:
+            # New format with metadata - extract the nested results
+            run_qrels[query] = data['results']
+        else:
+            # Old format - use data directly
+            run_qrels[query] = data
 
     # keep only queries with gold judgments
     run_qrels = {q: docs for q, docs in run_qrels.items() if q in expected_qrels}
@@ -134,7 +145,7 @@ def evaluate_file(task, directory, fname, dataset_cache):
 
 def evaluate_pipeline(task: str, directory: str, dataset_cache=None):
     """
-    Evaluate all JSON run-files in `results/retrieval/{task}/{directory}`,
+    Evaluate all JSON run-files in `results/{task}/{directory}`,
     producing per-file metrics and raw per-query evals.
     Returns:
       - ndcg_scores, mrr_scores, prec_scores, rec_scores: dict[file] = (mean, std)
@@ -146,7 +157,8 @@ def evaluate_pipeline(task: str, directory: str, dataset_cache=None):
     rec_scores = {}
     all_evals = {}
 
-    base = os.path.join(parent_dir, f"results/retrieval/{task.lower()}/{directory}")
+    # Updated path structure - no more retrieval subfolder
+    base = os.path.join(parent_dir, f"results/{task.lower()}/{directory}")
     if not os.path.isdir(base):
         logger.warning(f"Skipping missing directory: {base}")
         return ndcg_scores, mrr_scores, prec_scores, rec_scores, all_evals
@@ -178,7 +190,7 @@ async def evaluate_pipeline_mode(
     task, pipeline, mode, dataset_cache, results_queue
 ):
     """Evaluate a specific pipeline/mode combination asynchronously"""
-    subdir = f"{pipeline}/{mode}/"
+    subdir = f"{pipeline}-{mode}"  # Updated naming convention based on current structure
     ndcg, mrr, prec, rec, all_evals = evaluate_pipeline(
         task, subdir, dataset_cache
     )
@@ -204,7 +216,7 @@ async def evaluate_pipeline_mode(
     if all_evals:
         pq_dir = os.path.join(
             parent_dir,
-            f"results/retrieval/{task.lower()}/{pipeline}/{mode}/per_query"
+            f"results/{task.lower()}/{subdir}/per_query"
         )
         os.makedirs(pq_dir, exist_ok=True)
         for fn, ev in all_evals.items():
@@ -212,7 +224,7 @@ async def evaluate_pipeline_mode(
             outpath = os.path.join(pq_dir, f"{fn}_ndcg_per_query.json")
             with open(outpath, "w") as f:
                 json.dump(pq, f, indent=4)
-        logger.info(f"Saved per-query NDCG for {pipeline}/{mode}")
+        logger.info(f"Saved per-query NDCG for {pipeline}-{mode}")
     
     # Prepare for significance testing - group by query column
     ratings_by_query_column = {}
@@ -239,8 +251,28 @@ async def evaluate_pipeline_mode(
 
 
 async def async_main(task: str):
-    pipelines = ["text", "visual", "baseline"]
-    modes     = ["single", "multi", "bm25", "splade"]
+    # Discover available pipelines dynamically from directory structure
+    task_dir = os.path.join(parent_dir, f"results/{task.lower()}")
+    if not os.path.exists(task_dir):
+        logger.error(f"Task directory {task_dir} does not exist")
+        return
+    
+    available_dirs = [d for d in os.listdir(task_dir) 
+                     if os.path.isdir(os.path.join(task_dir, d)) and not d.startswith('.')]
+    
+    logger.info(f"Found directories for {task}: {available_dirs}")
+    
+    # Parse pipeline-mode combinations from directory names
+    pipeline_modes = []
+    for dir_name in available_dirs:
+        parts = dir_name.split('-')
+        if len(parts) >= 2:
+            pipeline = parts[0]
+            mode = '-'.join(parts[1:])  # Handle multi-part modes
+            pipeline_modes.append((pipeline, mode))
+        else:
+            # Handle single word directories as pipeline with no mode
+            pipeline_modes.append((dir_name, ""))
     
     # Load once, cached forever
     dataset_cache = load_dataset_cache(task)
@@ -249,16 +281,14 @@ async def async_main(task: str):
     results_queue = asyncio.Queue()
     eval_tasks    = []
     
-    for pipeline in pipelines:
-        for mode in modes:
-            if os.path.exists(os.path.join(parent_dir, f"results/retrieval/{task.lower()}/{pipeline}/{mode}")):
-                eval_tasks.append(
-                    asyncio.create_task(
-                        evaluate_pipeline_mode(
-                            task, pipeline, mode, dataset_cache, results_queue
-                        )
-                    )
+    for pipeline, mode in pipeline_modes:
+        eval_tasks.append(
+            asyncio.create_task(
+                evaluate_pipeline_mode(
+                    task, pipeline, mode, dataset_cache, results_queue
                 )
+            )
+        )
     
     records = []
     ratings_by_query_column = {}
@@ -275,9 +305,9 @@ async def async_main(task: str):
     
     await asyncio.gather(*eval_tasks)
     
-    # Save a summary Excel
+    # Save a summary Excel - updated path
     results_df = pd.DataFrame(records)
-    out_dir    = os.path.join(parent_dir, f"results/retrieval/{task.lower()}")
+    out_dir    = os.path.join(parent_dir, f"results/{task.lower()}")
     os.makedirs(out_dir, exist_ok=True)
     results_df.to_excel(
         os.path.join(out_dir, "retrieval_results.xlsx"),
@@ -350,6 +380,6 @@ def main(task: str):
 
 if __name__ == "__main__":
     current_dir = os.path.dirname(__file__)
-    parent_dir  = os.path.dirname(os.path.dirname(current_dir))
+    parent_dir  = os.path.dirname(current_dir)  # Fixed: only go up one level
     for t in ["TechReport","FinReport",]:
         main(t)

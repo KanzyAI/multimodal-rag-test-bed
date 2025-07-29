@@ -190,9 +190,6 @@ class BaseRetrieval():
         for row in dataset:
             if row[query_column] is not None and row[query_column] not in self.qrels.keys():
                 queries_to_process.append(row[query_column])
-        
-        if len(queries_to_process) > 10:
-            queries_to_process = random.sample(queries_to_process, 10)
             
         # Create progress bar
         with tqdm(total=len(queries_to_process), desc=f"Processing {query_column} queries", unit="queries") as pbar:

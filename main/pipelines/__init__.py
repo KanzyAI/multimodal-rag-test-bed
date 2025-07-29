@@ -44,7 +44,7 @@ try:
         url=os.getenv("TEXT_SINGLE_DATABASE_URL"),
         api_key=os.getenv("TEXT_SINGLE_DATABASE_API_KEY"),
         collection_name=f"text-single-{TASK}",
-        vector_size=1024,
+        vector_size=4096,
         vector_type="single",
     )
 except Exception as e:
