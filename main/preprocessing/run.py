@@ -11,14 +11,13 @@ class Preprocessing:
     """Handles preprocessing of documents before indexing"""
     
     def __init__(self, **kwargs):
-        self.semaphore = asyncio.Semaphore(50)
-        os.makedirs(f"preprocessing/texts/", exist_ok=True)
+        self.semaphore = asyncio.Semaphore(20)
         self.ocr_engine = OCR_Engine(f"main/preprocessing/texts/{TASK}_full_text.json")
     
     async def preprocess_document(self, filename: str, image: Any) -> str:
         """Preprocess a single document"""
         async with self.semaphore:
-            processed_text = await self.ocr_engine(image, filename)
+            processed_text = await self.ocr_engine(image, filename, apply_captioning=True, apply_chunking=False)
             return processed_text
     
     async def process_all_files(self, processed_files: set = None):

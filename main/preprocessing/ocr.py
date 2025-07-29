@@ -63,7 +63,7 @@ class OCR_Engine:
         except Exception as e:
             raise e
         
-    async def __call__(self, image, filename):
+    async def __call__(self, image, filename, apply_captioning=True, apply_chunking=False):
         """Complete preprocessing pipeline: OCR → Captioning → Chunking → Save"""
 
         # Initialize files if they don't exist
@@ -87,9 +87,12 @@ class OCR_Engine:
         markdown_text = await self.ocr(image, filename)
         
         # Step 2: Captioning (if needed)
-        image_refs = parse_image_references(markdown_text)
+        if apply_captioning:
+            image_refs = parse_image_references(markdown_text)
+        else:
+            image_refs = []
         
-        if image_refs:
+        if image_refs and apply_captioning:
             try:
                 captioned_text = await captioning(
                     document_image=image,
@@ -103,12 +106,15 @@ class OCR_Engine:
             final_text = markdown_text
         
         # Step 3: Chunking
-        try:
-            chunk_documents = chunk_financial_markdown(final_text)
-            # Extract just the text content (no metadata)
-            chunks = [chunk.page_content for chunk in chunk_documents]
-        except Exception as e:
-            chunks = [final_text]  # Fallback to full text as single chunk
+        if apply_chunking:
+            try:
+                chunk_documents = chunk_financial_markdown(final_text)
+                # Extract just the text content (no metadata)
+                chunks = [chunk.page_content for chunk in chunk_documents]
+            except Exception as e:
+                chunks = [final_text]  # Fallback to full text as single chunk
+        else:
+            chunks = [final_text]
         
         # Step 4: Save full text
         with open(self.output_path, "r+") as f:
