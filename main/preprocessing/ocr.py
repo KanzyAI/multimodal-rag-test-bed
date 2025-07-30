@@ -91,11 +91,12 @@ class OCR_Engine:
                 captioned_text = await captioning(
                     document_image=image,
                     document_text=markdown_text,
-                    model_type="gemini-2.5-flash"
+                    model_type="gemini-2.5-pro"
                 )
                 final_text = captioned_text
             except Exception as e:
                 final_text = markdown_text
+            
         else:
             final_text = markdown_text
         

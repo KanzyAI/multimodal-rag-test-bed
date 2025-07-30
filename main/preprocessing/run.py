@@ -7,6 +7,7 @@ from tqdm.asyncio import tqdm
 from main.preprocessing.ocr import OCR_Engine
 from main.preprocessing.chunking import ChunkingEngine
 from main.pipelines import TASK
+from main.dataset_loader import load_dataset_for_benchmark
 
 class Preprocessing:    
     """Handles preprocessing of documents before indexing"""
@@ -25,7 +26,7 @@ class Preprocessing:
     async def process_all_files(self, processed_files: set = None):
         """Process all files from the dataset that haven't been preprocessed yet"""
         
-        dataset = load_dataset(os.getenv("DATASET"), token=os.getenv("HF_TOKEN"), split="test")
+        dataset = load_dataset_for_benchmark(os.getenv("DATASET"))
         all_keys = set(dataset["image_filename"])
         
         if processed_files is None:
@@ -45,7 +46,7 @@ class Preprocessing:
             tasks = []
             
             for row in dataset:
-                if row["image_filename"] in keys_to_process:
+                if row["image_filename"] in keys_to_process and row["image"] is not None:
                     keys_to_process.remove(row["image_filename"])
                     filename = row["image_filename"]
                     image = row["image"]
@@ -75,8 +76,8 @@ class Preprocessing:
         return processed
     
     async def __call__(self):
-        processed_files = self.get_processed_files()
-        await self.process_all_files(processed_files)        
+        # processed_files = self.get_processed_files()
+        # await self.process_all_files(processed_files)        
         self.chunking_engine.process_all_files()
 
 if __name__ == "__main__":

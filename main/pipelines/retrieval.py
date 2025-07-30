@@ -9,6 +9,7 @@ from langgraph.graph import StateGraph, START, END
 from tqdm.asyncio import tqdm
 from langsmith import traceable
 from main.pipelines import database_mapping, embedder_mapping, TASK
+from main.dataset_loader import load_dataset_for_benchmark
 
 class SingleQueryState(TypedDict):
     """State for single query processing workflow"""
@@ -184,7 +185,7 @@ class BaseRetrieval():
                 json.dump({}, f, indent=4)
             self.qrels = {}
 
-        dataset = load_dataset(os.getenv("DATASET"), token=self.hf_token, split="test")
+        dataset = load_dataset_for_benchmark(os.getenv("DATASET"))
         
         queries_to_process = []
         for row in dataset:

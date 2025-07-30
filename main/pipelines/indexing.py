@@ -9,6 +9,7 @@ from main.vector_dabases import BaseVectorDatabase
 from tqdm.asyncio import tqdm
 from langsmith import traceable
 from main.pipelines import database_mapping, embedder_mapping, TASK
+from main.dataset_loader import load_dataset_for_benchmark
 
 class SingleDocumentState(TypedDict):
     """State for single document processing workflow"""
@@ -161,7 +162,7 @@ class BaseIndexing:
     async def process_all_files(self, indexed_files: set):
         """Process all not indexed files from the dataset using a single route"""
         
-        dataset = load_dataset(os.getenv("DATASET"), token=os.getenv("HF_TOKEN"), split="test")
+        dataset = load_dataset_for_benchmark(os.getenv("DATASET"))
 
         all_keys = set(dataset["image_filename"])
         

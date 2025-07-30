@@ -62,6 +62,7 @@ mistralai = "^1.9.3"
 poetry = "^1.7.0"
 pytest = "^8.1.0"
 coverage = "^7.4.0"
+ipykernel = "^6.30.0"
 
 [[tool.poetry.source]]
 name = "pypi"

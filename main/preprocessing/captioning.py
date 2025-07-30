@@ -3,6 +3,8 @@ import os
 import re
 import base64
 import io
+import asyncio
+import random
 from typing import Dict, List, Any, Type
 from pydantic import BaseModel, create_model
 from langchain.prompts import PromptTemplate
@@ -94,6 +96,56 @@ def replace_images_with_captions(text: str, captions: Dict[str, str]) -> str:
     
     return modified_text
 
+async def retry_with_exponential_backoff(
+    func,
+    max_retries: int = 5,
+    base_delay: float = 1.0,
+    max_delay: float = 60.0,
+    backoff_factor: float = 2.0,
+    jitter: bool = True
+):
+    """
+    Retry a function with exponential backoff.
+    
+    Args:
+        func: Async function to retry
+        max_retries: Maximum number of retry attempts
+        base_delay: Initial delay in seconds
+        max_delay: Maximum delay in seconds
+        backoff_factor: Factor to multiply delay by each retry
+        jitter: Whether to add random jitter to delay
+    
+    Returns:
+        Result of the function call
+    
+    Raises:
+        The last exception encountered after all retries
+    """
+    last_exception = None
+    
+    for attempt in range(max_retries + 1):
+        try:
+            result = await func()
+            return result
+        except Exception as e:
+            last_exception = e
+            
+            if attempt == max_retries:
+                print(f"All {max_retries + 1} attempts failed. Last error: {str(e)}")
+                break
+            
+            # Calculate delay with exponential backoff
+            delay = min(base_delay * (backoff_factor ** attempt), max_delay)
+            
+            # Add jitter to prevent thundering herd
+            if jitter:
+                delay *= (0.5 + random.random() * 0.5)
+            
+            print(f"Attempt {attempt + 1} failed: {str(e)}. Retrying in {delay:.2f} seconds...")
+            await asyncio.sleep(delay)
+    
+    raise last_exception
+
 CAPTIONING_PROMPT = PromptTemplate(
     input_variables=["document_text", "image_refs"],
     template="""
@@ -135,14 +187,16 @@ CAPTIONING_PROMPT = PromptTemplate(
     """
 )
 
-async def captioning(document_image, document_text, model_type):
+async def captioning(document_image, document_text, model_type, max_retries: int = 20):
     """
     Caption all images referenced in a document and replace them with captions.
+    Uses exponential backoff retry logic to handle errors gracefully.
     
     Args:
         document_image: The full document image (PIL Image or base64)
         document_text: The OCR text containing image references
         model_type: The model to use for captioning
+        max_retries: Maximum number of retry attempts
     
     Returns:
         Text with image references replaced by captions
@@ -183,20 +237,38 @@ async def captioning(document_image, document_text, model_type):
     ]
     
     message = HumanMessage(content=content)
-    response = await llm.ainvoke([message])
     
-    captions = {}
-    for img_ref in image_refs:
-        field_name = img_ref.replace('.jpeg', '').replace('-', '_')
-        caption = getattr(response, field_name, f"Visual content from {img_ref}")
+    async def attempt_captioning():
+        """Inner function that performs the actual captioning attempt"""
+        response = await llm.ainvoke([message])
         
-        if caption == img_ref or caption == field_name or len(caption.strip()) < 5:
-            print(f"Caption for {img_ref} is too short: {caption}")
-            raise ValueError(f"Caption for {img_ref} is too short: {caption}")
+        captions = {}
+        for img_ref in image_refs:
+            field_name = img_ref.replace('.jpeg', '').replace('-', '_')
+            caption = getattr(response, field_name, f"Visual content from {img_ref}")
+            
+            # Validate caption quality
+            if caption == img_ref or caption == field_name or len(caption.strip()) < 5:
+                error_msg = f"Caption for {img_ref} is too short or invalid: {caption}"
+                print(f"Caption quality issue: {error_msg}")
+                raise ValueError(error_msg)
+            
+            captions[img_ref] = caption
         
-        captions[img_ref] = caption
+        return captions
     
+    # Attempt captioning with exponential backoff retry
+    print(f"Starting captioning process for {len(image_refs)} images...")
+    captions = await retry_with_exponential_backoff(
+        attempt_captioning,
+        max_retries=max_retries,
+        base_delay=1.0,
+        max_delay=60.0,
+        backoff_factor=2.0,
+        jitter=True
+    )
+    
+    print(f"Successfully generated captions for all {len(image_refs)} images")
     captioned_text = replace_images_with_captions(document_text, captions)
-    
     return captioned_text
 
