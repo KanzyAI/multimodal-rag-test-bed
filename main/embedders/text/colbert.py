@@ -3,28 +3,36 @@
 
 
 # class ColbertEmbedder(BaseEmbedder):
-#     """ColBERT embedder for multi-vector text embedding."""
+#     """Jina ColBERT v2 embedder for multilingual multi-vector text embedding with 8k context length."""
     
 #     def __init__(self, config):
 #         if isinstance(config, str):
 #             config = EmbedderConfig(model_name=config)
         
 #         self.embedder_type = "text"
-#         self.vector_size = 128  # ColBERT typically uses smaller vectors
+#         self.vector_size = 128  # Jina ColBERT v2 uses 128 dimensions (also supports 96, 64 with Matryoshka)
 #         super().__init__(config)
         
 #     def _initialize_model(self):
-#         """Initialize the ColBERT model."""
-#         model_name = self.config.model_name or "lightonai/GTE-ModernColBERT-v1"
-#         batch_size = self.config.batch_size or 32
+#         """Initialize the Jina ColBERT v2 model."""
+#         model_name = self.config.model_name or "jinaai/jina-colbert-v2"
         
-#         self.embedder = models.ColBERT(model_name_or_path=model_name)
+#         # Initialize with proper configuration for Jina ColBERT v2
+#         self.embedder = models.ColBERT(
+#             model_name_or_path=model_name,
+#             query_prefix="[QueryMarker]",
+#             document_prefix="[DocumentMarker]",
+#             attend_to_expansion_tokens=True,
+#             trust_remote_code=True,
+#         )
 
 #     async def embed_documents(self, texts):
 #         """Embed multiple documents."""
+#         batch_size = self.config.batch_size or 32
+        
 #         all_embeddings = self.embedder.encode(
 #             texts,
-#             batch_size=self.batch_size,
+#             batch_size=batch_size,
 #             is_query=False,  
 #             show_progress_bar=True,
 #         )
