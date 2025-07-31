@@ -17,13 +17,6 @@ class OCR_Engine:
         self.client = Mistral(api_key=self.api_key) 
         self.output_path = output_path
         
-        logging.basicConfig(
-            filename=self.output_path,
-            filemode="w",
-            format="%(asctime)s - %(levelname)s - %(message)s",
-            level=logging.INFO,
-        )
-
     async def ocr(self, image, filename): 
         """Process image using Mistral OCR API - assumes only 1 page per image"""
         try:

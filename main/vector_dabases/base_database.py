@@ -84,8 +84,7 @@ class BaseVectorDatabase(ABC):
         """Generate a unique ID for a document based on metadata."""
         file_key = metadata.get("filename", "")
         chunk_id = metadata.get("chunk_id", "")
-        if self.vector_type == "single" and chunk_id:
-            file_key = f"{file_key}_chunk_{chunk_id}"
+        file_key = f"{file_key}_chunk_{chunk_id}" if chunk_id else file_key
         return str(uuid.uuid5(uuid.NAMESPACE_DNS, file_key))
 
 class VectorDatabaseFactory:

@@ -30,7 +30,7 @@ def _ensure_embedders_registered():
             # Import specific text embedders
             from .text.linq import LinqEmbedder
             from .text.voyage import VoyageTextEmbedder
-        
+            from .text.colbert import ColbertEmbedder
         _ensure_embedders_registered._registered = True
 
 # Monkey patch the factory to ensure registration on first use

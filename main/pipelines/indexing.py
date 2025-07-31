@@ -32,7 +32,7 @@ class SingleIndexingTask:
         self.route = route
         self.database = database
         self.embedder = embedder
-        self.semaphore = semaphore or asyncio.Semaphore(10)
+        self.semaphore = semaphore or asyncio.Semaphore(30)
         self.progress_bar = progress_bar
 
     def create_document_graph(self):
@@ -61,12 +61,7 @@ class SingleIndexingTask:
             """Embed the document using the embedder"""
             # Handle different input types after preprocessing
             if isinstance(state["image"], list):
-                # Text route: state["image"] contains list of text chunks
-                embeddings = []
-                for chunk_text in state["image"]:
-                    if chunk_text and chunk_text.strip():
-                        chunk_embedding = await self.embedder.embed_document(chunk_text)
-                        embeddings.append(chunk_embedding)
+                embeddings = await self.embedder.embed_documents(state["image"])
                 state["embedding"] = embeddings
             else:
                 # Visual route: state["image"] contains image object
@@ -193,7 +188,7 @@ class BaseIndexing:
                 for row in dataset:
                     if row["image_filename"] in keys_to_process:
                         keys_to_process.remove(row["image_filename"])
-                        task = indexing_task.process_document(row["image_filename"], row["image"], self.chunks[row["image_filename"]]["chunks"])
+                        task = indexing_task.process_document(row["image_filename"], row["image"], self.chunks.get(row["image_filename"], {}).get("chunks", []))
                         tasks.append(task)
             
             if tasks:

@@ -76,8 +76,8 @@ class Preprocessing:
         return processed
     
     async def __call__(self):
-        # processed_files = self.get_processed_files()
-        # await self.process_all_files(processed_files)        
+        processed_files = self.get_processed_files()
+        await self.process_all_files(processed_files)        
         self.chunking_engine.process_all_files()
 
 if __name__ == "__main__":
