@@ -11,12 +11,12 @@ class BiQwen2_5Embedder(BaseEmbedder):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         
         self.model = BiQwen2_5.from_pretrained(
-            self.model_name,
+            "nomic-ai/nomic-embed-multimodal-7b",
             torch_dtype=torch.bfloat16 if self.device.type == 'cuda' else torch.float32,
             device_map=self.device,
         ).to(self.device).eval()
     
-        self.processor = BiQwen2_5_Processor.from_pretrained(self.model_name)
+        self.processor = BiQwen2_5_Processor.from_pretrained("nomic-ai/nomic-embed-multimodal-7b")
 
     async def embed_document(self, image):
         """Embed a document (image)."""

@@ -25,4 +25,4 @@ export MULTIMODAL_SINGLE_EMBEDDER="biqwen"
 # export TASK=tatdqa
 # export DATASET=vidore/tatdqa_train
 
-python -m main.pipelines.indexing
+python -m main.pipelines.retrieval

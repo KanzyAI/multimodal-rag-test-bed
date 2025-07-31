@@ -11,12 +11,12 @@ class ColQwen2_5Embedder(BaseEmbedder):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         
         self.model = ColQwen2_5.from_pretrained(
-            self.model_name,
+            "Metric-AI/ColQwen2.5-7b-multilingual-v1.0",
             torch_dtype=torch.bfloat16 if self.device.type == 'cuda' else torch.float32,
             device_map=self.device,
         ).to(self.device).eval()
     
-        self.processor = ColQwen2_5_Processor.from_pretrained(self.model_name)
+        self.processor = ColQwen2_5_Processor.from_pretrained("Metric-AI/ColQwen2.5-7b-multilingual-v1.0")
 
     async def embed_document(self, image):
         """Embed a document (image)."""
