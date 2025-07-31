@@ -1,8 +1,6 @@
 import os
 import asyncio
-import random
 import json
-from datasets import load_dataset
 from typing import Dict, Any, TypedDict
 from langgraph.graph import StateGraph, START, END
 from main.vector_dabases import BaseVectorDatabase
@@ -49,7 +47,7 @@ class SingleIndexingTask:
 
         def should_preprocess(state: SingleDocumentState) -> str:
             """Determine if preprocessing is needed"""
-            if self.route.startswith("TEXT"):
+            if self.route.upper().startswith("TEXT"):
                 return "preprocess_document"
             else:
                 return "embed_document"
@@ -66,8 +64,9 @@ class SingleIndexingTask:
                 # Text route: state["image"] contains list of text chunks
                 embeddings = []
                 for chunk_text in state["image"]:
-                    chunk_embedding = await self.embedder.embed_document(chunk_text)
-                    embeddings.append(chunk_embedding)
+                    if chunk_text and chunk_text.strip():
+                        chunk_embedding = await self.embedder.embed_document(chunk_text)
+                        embeddings.append(chunk_embedding)
                 state["embedding"] = embeddings
             else:
                 # Visual route: state["image"] contains image object
@@ -80,7 +79,7 @@ class SingleIndexingTask:
             embedding = state["embedding"]
             metadata = state["metadata"]
             
-            if self.route.startswith("TEXT"):
+            if self.route.upper().startswith("TEXT"):
                 # Handle text embeddings (multiple chunk)
                 for i, emb in enumerate(embedding):
                     chunk_metadata = metadata.copy()

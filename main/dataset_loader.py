@@ -13,7 +13,7 @@ def load_dataset_for_benchmark(dataset_name: str):
     def process_image_filename(example):
         if 'image_filename' in example:
             filename = example['image_filename']
-            if filename.startswith('data/downloaded_datasets/tatdqa/train/'):
+            if filename.startswith('data/downloaded_datasets/tatdqa/'):
                 example['image_filename'] = filename.split('/')[-1]
             elif filename.startswith('raw/'):
                 example['image_filename'] = filename.split('/')[-1]
