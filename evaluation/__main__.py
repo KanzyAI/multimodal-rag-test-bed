@@ -29,14 +29,26 @@ def load_dataset_cache(task: str):
     Load dataset once and cache it for reuse.
     Subsequent calls with the same `task` will return the in-memory copy.
     """
-    ds = load_dataset(f"ibm-research/REAL-MM-RAG_{task}", split="test")
-    return ds.select_columns([
-        "query",
-        "rephrase_level_1",
-        "rephrase_level_2",
-        "rephrase_level_3",
-        "image_filename"
-    ])
+    try:
+        ds = load_dataset(f"ibm-research/REAL-MM-RAG_{task}", split="test")
+    except Exception as e:
+        ds = load_dataset(f"emrekuruu/{task}", split="train")
+    
+    if task == "FinReport" or task == "FinSlides":
+
+        return ds.select_columns([
+            "query",
+            "rephrase_level_1",
+            "rephrase_level_2",
+            "rephrase_level_3",
+            "image_filename"
+        ])
+    
+    else:
+        return ds.select_columns([
+            "query",
+            "image_filename"
+        ])
 
 
 def get_expected_qrels(
@@ -381,5 +393,5 @@ def main(task: str):
 if __name__ == "__main__":
     current_dir = os.path.dirname(__file__)
     parent_dir  = os.path.dirname(current_dir)  # Fixed: only go up one level
-    for t in ["TechReport","FinReport",]:
+    for t in ["FinSlides","FinReport","FinQA", "ConvFinQA","VQAonBD","TATDQA"]:
         main(t)

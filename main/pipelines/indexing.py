@@ -127,18 +127,22 @@ class SingleIndexingTask:
         async with self.semaphore:
             graph = self.create_document_graph()
             
-            initial_state = SingleDocumentState(
-                filename=filename,
-                image=image,
-                chunks=chunks,
-                metadata={},
-                embedding=None,
-                processed=False
-            )
+            try:
+                initial_state = SingleDocumentState(
+                    filename=filename,
+                    image=image,
+                    chunks=chunks,
+                    metadata={},
+                    embedding=None,
+                    processed=False
+                )
+                
+                final_state = await graph.ainvoke(initial_state)
+                return final_state
             
-            final_state = await graph.ainvoke(initial_state)
-            return final_state
-
+            except Exception as e:
+                print(f"Error processing document {filename}: {e}")
+                return None
 class BaseIndexing:
     def __init__(
         self,

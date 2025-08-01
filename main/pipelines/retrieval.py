@@ -186,6 +186,9 @@ class BaseRetrieval():
             self.qrels = {}
 
         dataset = load_dataset_for_benchmark(os.getenv("DATASET"))
+
+        if query_column not in dataset.column_names:
+            return
         
         queries_to_process = []
         for row in dataset:
